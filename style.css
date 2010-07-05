@@ -1,0 +1,29 @@
+body {
+  background-color: #000000;
+  font-size: 12px;
+  font-family: MONOSPACE;
+  color:#A8A8A8;  
+  padding: 0px;
+  margin: 0px;
+}
+#content { 	
+  position:absolute;
+  height: 250px; 
+  width: 700px;
+  margin: 0;
+  top: 5%; 
+  left: 8%;
+  text-align: center;
+  padding: 0px;
+  background-color: #000000;
+  border: 4px solid #2f5b88;
+  background-image: url('../images/shell1.png');
+  background-repeat:no-repeat; 
+  overflow: auto;
+}
+a { 
+color: #300000;
+font-size: 11px;
+background-color:transparent;
+text-decoration: none; 
+}
