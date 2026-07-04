@@ -1,19 +1,24 @@
-# Mike reDD GitHub Site
+# mikeredd.github.com
 
-Static GitHub Pages landing page for Mike reDD / Typezer∅.
+GitHub Pages landing site for Mike reDD / **It Works On My Machine**.
 
-## What changed
+This is a plain static site: no framework, no build step, no external dependencies.
 
-- Replaced the old XHTML page with modern HTML5.
-- Added a responsive terminal-style layout.
-- Added project cards for the main repo, Cloud Player, Parallax, Cadence, Seraph, media tools, and bots.
-- Added mobile-friendly CSS with no external dependencies.
-- Added a small JavaScript helper for copy buttons and current-year footer.
-- Added `.nojekyll` so GitHub Pages serves the static assets directly.
+## Files
+
+```text
+index.html
+404.html
+assets/site.css
+assets/site.js
+images/
+favicon.png
+.nojekyll
+```
 
 ## Deploy
 
-Push these files to the GitHub Pages repo root:
+Copy these files into the GitHub Pages repo root, then:
 
 ```bash
 git add .
@@ -21,4 +26,7 @@ git commit -m "Refresh GitHub Pages landing site"
 git push
 ```
 
-If this repo is using a custom domain, keep or add your `CNAME` file before pushing.
+## Design
+
+Dark neon terminal / command-center look with responsive cards, animated ambient background,
+project sections, repo map, bot lineup, screenshot strip, and philosophy block.

@@ -4,10 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="author" content="Mike reDD" />
-  <meta name="description" content="Mike reDD's GitHub landing page: scripts, bots, media tools, Android toys, 3D printing, and useful nonsense." />
-  <meta name="theme-color" content="#090b10" />
+  <meta name="description" content="Mike reDD's GitHub Pages command center for It Works On My Machine: scripts, bots, media tools, Android toys, 3D printing, and useful nonsense." />
+  <meta name="theme-color" content="#05070d" />
   <meta property="og:title" content="Mike reDD // It Works On My Machine" />
-  <meta property="og:description" content="A personal GitHub lab for weird tools, bots, scripts, media encoders, Android toys, 3D prints, and useful nonsense." />
+  <meta property="og:description" content="A neon terminal GitHub lab for weird tools, bots, scripts, media encoders, Android toys, 3D prints, and useful nonsense." />
   <meta property="og:type" content="website" />
   <title>Mike reDD // It Works On My Machine</title>
   <link rel="icon" type="image/png" href="favicon.png" />
@@ -16,173 +16,248 @@
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
-  <div class="background-grid" aria-hidden="true"></div>
-  <div class="noise" aria-hidden="true"></div>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+  <div class="matrix-grid" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
 
-  <header class="site-header">
+  <header class="site-header" id="top">
     <a class="brand" href="#top" aria-label="Mike reDD home">
-      <span class="brand-mark">∅</span>
-      <span class="brand-text">
+      <span class="brand-core"><span>∅</span></span>
+      <span class="brand-copy">
         <strong>Mike reDD</strong>
         <small>typezero@arakiel // miker@netzach</small>
       </span>
     </a>
+
     <nav class="nav" aria-label="Primary navigation">
       <a href="#projects">Projects</a>
-      <a href="#lab">Lab</a>
+      <a href="#stack">Stack</a>
+      <a href="#bots">Bots</a>
       <a href="#philosophy">Philosophy</a>
-      <a class="nav-pill" href="https://github.com/mikeredd">GitHub</a>
+      <a class="nav-cta" href="https://github.com/MikereDD">GitHub</a>
     </nav>
   </header>
 
   <main id="main">
-    <section id="top" class="hero section-shell">
-      <div class="hero-copy">
-        <p class="eyebrow">personal code garage // open source weirdness</p>
-        <h1>It works on my machine.</h1>
+    <section class="hero shell-panel reveal">
+      <div class="hero-left">
+        <div class="status-row" aria-label="Site status">
+          <span class="live-dot"></span>
+          <span>GitHub lab online</span>
+          <span class="slash">/</span>
+          <span>no corporate energy detected</span>
+        </div>
+
+        <p class="eyebrow">personal code garage // open-source chaos bench</p>
+        <h1><span>It works</span><span>on my machine.</span></h1>
         <p class="hero-text">
-          A living GitHub lab for PowerShell tools, Linux scripts, Telegram bots,
-          media encoders, Android experiments, 3D printing helpers, and whatever
-          odd idea survives the next test run.
+          A living workshop for PowerShell tools, Linux scripts, Telegram bots,
+          media encoders, Android experiments, 3D printing helpers, and small
+          utilities that got tired of being ideas.
         </p>
+
         <div class="hero-actions">
-          <a class="button primary" href="https://github.com/MikereDD/It-Works-On-My-Machine">Open the main repo</a>
-          <a class="button" href="https://github.com/mikeredd?tab=repositories">Browse repositories</a>
+          <a class="button primary" href="https://github.com/MikereDD/It-Works-On-My-Machine">
+            <span>Open main repo</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 5 20 11.5 13.5 18M19 11.5H4" /></svg>
+          </a>
+          <a class="button ghost" href="#projects">Explore builds</a>
+        </div>
+
+        <div class="hero-meta" aria-label="Project categories">
+          <span>PowerShell</span>
+          <span>Bash</span>
+          <span>Python</span>
+          <span>Android</span>
+          <span>OpenSCAD</span>
         </div>
       </div>
 
-      <aside class="terminal-card" aria-label="Terminal preview">
-        <div class="terminal-topbar">
-          <span></span><span></span><span></span>
-          <em>~/github</em>
+      <div class="hero-right" aria-label="Repo command center preview">
+        <div class="orbit-card">
+          <div class="orbital-ring ring-one"></div>
+          <div class="orbital-ring ring-two"></div>
+          <div class="orbital-core">
+            <span>IWOMM</span>
+            <small>main</small>
+          </div>
         </div>
-        <pre><code><span class="prompt">miker@netzach</span> git status
-<span class="muted">on branch main</span>
-<span class="ok">nothing exploded yet</span>
+
+        <aside class="terminal-window">
+          <div class="terminal-topbar">
+            <span></span><span></span><span></span>
+            <em>~/It-Works-On-My-Machine</em>
+          </div>
+          <pre><code><span class="prompt">miker@netzach</span> git status
+<span class="dim">on branch main</span>
+<span class="ok">working tree clean enough</span>
 
 <span class="prompt">typezero@arakiel</span> ./ship-it.sh
-building scripts... <span class="ok">ok</span>
-packing bots..... <span class="ok">ok</span>
-polishing chaos.. <span class="warn">always</span></code></pre>
-      </aside>
+windows tools.... <span class="ok">ok</span>
+pi scripts....... <span class="ok">ok</span>
+bots............ <span class="ok">awake</span>
+media pipeline.. <span class="warn">dangerously useful</span></code></pre>
+        </aside>
+
+        <div class="mini-dashboard" aria-hidden="true">
+          <div><strong>7</strong><span>areas</span></div>
+          <div><strong>3</strong><span>bots</span></div>
+          <div><strong>∞</strong><span>ideas</span></div>
+        </div>
+      </div>
     </section>
 
-    <section class="stats-grid" aria-label="Project areas">
-      <article>
-        <span>Windows</span>
-        <strong>PowerShell tools</strong>
-        <p>Menus, utilities, media helpers, and small desktop apps.</p>
-      </article>
-      <article>
-        <span>Linux</span>
-        <strong>Pi lab scripts</strong>
-        <p>Raspberry Pi workflows, tmux, bot runtime, and shell polish.</p>
-      </article>
-      <article>
-        <span>Bots</span>
-        <strong>Telegram helpers</strong>
-        <p>Downloads, AI prompts, music library search, and dashboards.</p>
-      </article>
-      <article>
-        <span>Media</span>
-        <strong>Backup / encode</strong>
-        <p>Blu-ray, DVD, CD ripping, metadata, tagging, and validation.</p>
-      </article>
+    <section class="ticker reveal" aria-label="Repository areas">
+      <div class="ticker-track">
+        <span>Windows</span><span>Linux</span><span>Bots</span><span>Media</span><span>Android</span><span>Games</span><span>3D Printing</span><span>Cloud Player</span>
+      </div>
     </section>
 
-    <section id="projects" class="section">
-      <div class="section-heading">
+    <section id="projects" class="section reveal">
+      <div class="section-heading wide">
         <p class="eyebrow">featured builds</p>
-        <h2>Useful nonsense, organized.</h2>
-        <p>Projects stay small enough to understand, weird enough to be fun, and practical enough to actually run.</p>
+        <h2>Useful nonsense, dressed up properly.</h2>
+        <p>
+          The repo is not trying to be sterile. It is a working garage: tools that run,
+          scripts that solve annoying problems, and experiments that get refined until they feel right.
+        </p>
       </div>
 
       <div class="project-grid">
-        <article class="project-card featured">
-          <div class="card-kicker">roadmap project</div>
+        <article class="project-card hero-project">
+          <div class="card-topline"><span>Roadmap</span><em>favorite build</em></div>
           <h3>Cloud Player</h3>
-          <p>A cloud media player experiment focused on a clean player, grouped library views, and provider integrations.</p>
-          <ul>
-            <li>Player first, library second, providers third.</li>
-            <li>Media grouping instead of raw file dumping.</li>
-            <li>Future ideas stay parked until the core is right.</li>
-          </ul>
+          <p>
+            A cloud media player experiment with a clean player, grouped media library views,
+            and provider integrations that do not bury the user in raw files.
+          </p>
+          <div class="card-tags"><span>media</span><span>cloud</span><span>library</span></div>
         </article>
 
         <article class="project-card">
-          <div class="card-kicker">PowerShell</div>
+          <div class="card-icon">◈</div>
+          <div class="card-topline"><span>PowerShell</span><em>polished</em></div>
           <h3>Parallax</h3>
-          <p>A polished Windows utility with a cleaner UI, app icon, and repo-ready scripting.</p>
+          <p>A Windows utility with a better UI, app icon, cleaner startup, and repo-ready presentation.</p>
         </article>
 
         <article class="project-card">
-          <div class="card-kicker">Music</div>
+          <div class="card-icon">♪</div>
+          <div class="card-topline"><span>Music</span><em>local player</em></div>
           <h3>Cadence</h3>
-          <p>Local music player work: album art, stable startup, playlist cleanup, and button polish.</p>
+          <p>Album art, playlist cleanup, safer startup, better logging, and button polish.</p>
         </article>
 
         <article class="project-card">
-          <div class="card-kicker">Audio tags</div>
+          <div class="card-icon">◎</div>
+          <div class="card-topline"><span>Audio tags</span><em>ripper</em></div>
           <h3>Seraph</h3>
-          <p>CD ripping, FLAC workflows, MusicBrainz fallback, cover art, and real file renaming.</p>
+          <p>CD ripping, FLAC workflows, MusicBrainz fallback, cover art, and actual file renaming.</p>
         </article>
 
         <article class="project-card">
-          <div class="card-kicker">Video</div>
+          <div class="card-icon">▣</div>
+          <div class="card-topline"><span>Video</span><em>deterministic</em></div>
           <h3>Media Encoder</h3>
-          <p>Blu-ray/DVD backup and encode scripts with deterministic metadata, subtitles, audio mapping, and samples.</p>
+          <p>Blu-ray/DVD/CD tools with metadata sidecars, subtitle handling, audio mapping, and samples.</p>
         </article>
 
         <article class="project-card">
-          <div class="card-kicker">Telegram</div>
-          <h3>Raziel / Zaphkiel / Sandalphon</h3>
-          <p>A small bot family for downloads, AI prompts, and music library search running from the Pi lab.</p>
+          <div class="card-icon">⌁</div>
+          <div class="card-topline"><span>Android</span><em>toys</em></div>
+          <h3>Games & APKs</h3>
+          <p>Small Android experiments, game builds, icons, screenshots, and release-ready pages.</p>
         </article>
       </div>
     </section>
 
-    <section id="lab" class="section split-section">
-      <div class="section-heading compact">
-        <p class="eyebrow">the lab</p>
-        <h2>Built between Windows and the Pi.</h2>
-        <p>The setup is part workshop, part arcade, part media bench. The goal is simple: make the computer do the annoying thing so a person does not have to.</p>
+    <section id="stack" class="section split reveal">
+      <div class="section-heading sticky-copy">
+        <p class="eyebrow">repo map</p>
+        <h2>One repo. Several little machines.</h2>
+        <p>
+          The site now presents the project like a command center instead of a folder dump:
+          Windows tools, Pi scripts, bots, media workflows, Android builds, games, and 3D printing.
+        </p>
       </div>
 
-      <div class="lab-panel">
-        <div class="command-row">
-          <span class="prompt">$</span>
+      <div class="repo-map shell-panel compact-panel">
+        <div class="window-label">repository tree</div>
+        <div class="tree-row root"><span>~/It-Works-On-My-Machine</span><em>main</em></div>
+        <div class="tree-row"><span>Windows/PowerShell</span><em>menus + tools</em></div>
+        <div class="tree-row"><span>Linux/Bash</span><em>Pi lab polish</em></div>
+        <div class="tree-row"><span>Bots/Raziel</span><em>downloads</em></div>
+        <div class="tree-row"><span>Bots/Zaphkiel</span><em>AI prompts</em></div>
+        <div class="tree-row"><span>Bots/Sandalphon</span><em>music library</em></div>
+        <div class="tree-row"><span>Media</span><em>rip + encode</em></div>
+        <div class="tree-row"><span>3D-Printing</span><em>OpenSCAD + STL</em></div>
+        <div class="command-copy">
           <code>git clone https://github.com/MikereDD/It-Works-On-My-Machine</code>
           <button type="button" data-copy="git clone https://github.com/MikereDD/It-Works-On-My-Machine">copy</button>
         </div>
-        <div class="lab-list">
-          <div><strong>Windows</strong><span>PowerShell tools, games, media scripts</span></div>
-          <div><strong>Linux</strong><span>Bash helpers, tmux sessions, Pi runtime</span></div>
-          <div><strong>Android</strong><span>Toys, experiments, APK builds</span></div>
-          <div><strong>3D Printing</strong><span>OpenSCAD, STL helpers, practical stands</span></div>
-        </div>
       </div>
     </section>
 
-    <section id="philosophy" class="section philosophy section-shell">
-      <div>
-        <p class="eyebrow">philosophy.md</p>
-        <h2>Make it useful. Keep it weird.</h2>
+    <section id="bots" class="section reveal">
+      <div class="section-heading">
+        <p class="eyebrow">telegram bench</p>
+        <h2>The angel bot lineup.</h2>
+        <p>Three small helpers with specific jobs, running from the Pi lab instead of pretending to be a giant platform.</p>
       </div>
+
+      <div class="bot-grid">
+        <article class="bot-card">
+          <span class="bot-sigil">R</span>
+          <h3>Raziel</h3>
+          <p>YTBot for downloads, format choices, queue handling, and shared-link watch.</p>
+          <small>/dl /audio /clip /hd /full</small>
+        </article>
+        <article class="bot-card">
+          <span class="bot-sigil">Z</span>
+          <h3>Zaphkiel</h3>
+          <p>AIBot for prompts, image ideas, conversion helpers, and style experiments.</p>
+          <small>/ask /image /convert /styles</small>
+        </article>
+        <article class="bot-card">
+          <span class="bot-sigil">S</span>
+          <h3>Sandalphon</h3>
+          <p>MusicBot for library search, dashboard browsing, metadata, and playback helpers.</p>
+          <small>/song /find /library /artists</small>
+        </article>
+      </div>
+    </section>
+
+    <section class="section gallery reveal" aria-label="Terminal screenshot gallery">
+      <div class="section-heading compact-title">
+        <p class="eyebrow">terminal mood</p>
+        <h2>Still feels like home.</h2>
+      </div>
+      <div class="screenshot-strip">
+        <img src="images/shell1.png" alt="Terminal screenshot one" />
+        <img src="images/shell2.png" alt="Terminal screenshot two" />
+        <img src="images/shell3.png" alt="Terminal screenshot three" />
+      </div>
+    </section>
+
+    <section id="philosophy" class="section philosophy shell-panel reveal">
+      <div class="philosophy-mark">philosophy.md</div>
       <blockquote>
-        Code does not have to be perfect to be worth sharing. It has to be honest,
-        readable, testable, and useful enough that someone else can pick it up,
-        break it, fix it, and make it their own.
+        “Make it useful. Keep it weird. Leave the repo better than it was yesterday.”
       </blockquote>
       <p>
-        The vision can change. The philosophy should not: build things, learn from the ugly parts,
-        and leave the repo better than it was yesterday.
+        The vision can change. The philosophy should not. Build the thing, test the ugly part,
+        write down what worked, and let the code remain available for whoever finds it later.
       </p>
     </section>
   </main>
 
   <footer class="site-footer">
-    <p>© <span id="year">2026</span> Mike reDD. Whole lotta nothing, finally organized.</p>
-    <p><a href="https://github.com/mikeredd">github.com/mikeredd</a></p>
+    <div>
+      <strong>Mike reDD</strong>
+      <span>© <span id="year">2026</span> // It Works On My Machine</span>
+    </div>
+    <a href="https://github.com/MikereDD">github.com/MikereDD</a>
   </footer>
 
   <script src="assets/site.js"></script>
