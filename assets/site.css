@@ -544,12 +544,13 @@ pre { position: relative; z-index: 1; margin: 0; padding: clamp(20px, 3vw, 30px)
   font: .78rem/1 var(--mono);
 }
 
-.bot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.bot-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; }
+.bot-card:nth-child(1) { grid-column: span 1; }
 .bot-card {
   position: relative;
   overflow: hidden;
   min-height: 285px;
-  padding: 26px;
+  padding: 24px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: linear-gradient(145deg, rgba(255,255,255,.07), rgba(255,255,255,.025));
