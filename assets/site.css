@@ -795,3 +795,209 @@ blockquote {
 .screenshot-strip img {
   transition: opacity 180ms ease, border-color 180ms ease, transform 180ms ease;
 }
+
+/* Terminal mood prompt cards --------------------------------------------- */
+.terminal-mood {
+  position: relative;
+  margin-top: 110px;
+}
+.terminal-mood::before {
+  content: "";
+  position: absolute;
+  inset: -70px -10vw auto -10vw;
+  height: 330px;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 26% 45%, rgba(0, 255, 220, .10), transparent 28rem),
+    radial-gradient(circle at 72% 38%, rgba(0, 255, 76, .08), transparent 24rem);
+  opacity: .75;
+}
+.mood-heading {
+  position: relative;
+  z-index: 1;
+  max-width: none;
+  display: grid;
+  grid-template-columns: minmax(170px, .42fr) minmax(0, 1.1fr);
+  align-items: end;
+  gap: 24px 42px;
+}
+.mood-heading .eyebrow {
+  align-self: start;
+  padding-top: 18px;
+}
+.mood-heading h2 {
+  max-width: 900px;
+  justify-self: end;
+  font-size: clamp(3.2rem, 7.6vw, 6.7rem);
+  letter-spacing: -.085em;
+  color: #f1f6ff;
+  text-shadow: 0 18px 60px rgba(0,0,0,.45), 0 0 70px rgba(111,184,255,.10);
+}
+.mood-heading p:not(.eyebrow) {
+  grid-column: 2;
+  justify-self: end;
+  max-width: 760px;
+  margin-top: -12px;
+  text-align: right;
+}
+.prompt-rig {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1.08fr 1fr 1fr;
+  gap: 16px;
+}
+.prompt-card {
+  position: relative;
+  min-height: 300px;
+  overflow: hidden;
+  padding: 18px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 26px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.022)),
+    radial-gradient(circle at 22% 12%, rgba(0, 255, 220, .075), transparent 20rem),
+    rgba(5, 8, 12, .72);
+  box-shadow: 0 24px 80px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.045);
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  gap: 16px;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+.prompt-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .48;
+  background:
+    linear-gradient(90deg, rgba(31,255,231,.05) 1px, transparent 1px),
+    linear-gradient(rgba(31,255,231,.035) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(to bottom, black, transparent 76%);
+}
+.prompt-card::after {
+  content: attr(data-label);
+  position: absolute;
+  right: 16px;
+  bottom: 8px;
+  font: 700 4.1rem/.8 var(--mono);
+  letter-spacing: -.12em;
+  color: rgba(255,255,255,.032);
+  text-transform: uppercase;
+  pointer-events: none;
+}
+.prompt-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(142,240,194,.48);
+  box-shadow: 0 30px 100px rgba(0,0,0,.44), 0 0 45px rgba(142,240,194,.06), inset 0 1px 0 rgba(255,255,255,.06);
+  background:
+    linear-gradient(180deg, rgba(142,240,194,.075), rgba(255,255,255,.025)),
+    radial-gradient(circle at 22% 12%, rgba(0,255,220,.11), transparent 20rem),
+    rgba(5, 8, 12, .75);
+}
+.prompt-card-top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  color: var(--muted);
+  font: .78rem/1 var(--mono);
+  text-transform: uppercase;
+  letter-spacing: .12em;
+}
+.prompt-card-top strong { color: var(--accent); }
+.prompt-card-top em {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--dim);
+  font-style: normal;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.prompt-led {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 5px rgba(142,240,194,.10), 0 0 20px rgba(142,240,194,.58);
+}
+.prompt-screen {
+  position: relative;
+  z-index: 1;
+  min-height: 122px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 18px 14px 16px;
+  border: 1px solid rgba(38,255,247,.20);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.80), rgba(0,0,0,.64)),
+    radial-gradient(circle at 12% 18%, rgba(38,255,247,.11), transparent 14rem);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.025), 0 14px 42px rgba(0,0,0,.28);
+  color: #d9e2e8;
+  font-family: var(--mono);
+  line-height: 1.45;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.prompt-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .18;
+  background: linear-gradient(rgba(255,255,255,.07) 50%, transparent 50%);
+  background-size: 100% 4px;
+}
+.prompt-line,
+.prompt-output { position: relative; z-index: 1; font-size: clamp(.82rem, 1.05vw, .96rem); }
+.prompt-output { padding-left: 3.05ch; color: #b9c5d0; }
+.term-cyan { color: #38f6f4; text-shadow: 0 0 15px rgba(56,246,244,.32); }
+.term-green { color: #27ff45; text-shadow: 0 0 14px rgba(39,255,69,.26); }
+.term-blue { color: #7ee7ff; text-shadow: 0 0 12px rgba(126,231,255,.18); }
+.term-red { color: #ff3b6d; text-shadow: 0 0 14px rgba(255,59,109,.25); }
+.term-purple { color: #df7dff; }
+.term-dim { color: #9aa4ad; }
+.term-text { color: #e6edf5; }
+.term-cursor {
+  display: inline-block;
+  width: 10px;
+  height: 1.35em;
+  margin-left: 1.05ch;
+  vertical-align: -.25em;
+  border-left: 2px solid #eef6ff;
+  animation: cursorBlink 1s steps(2, jump-none) infinite;
+}
+.prompt-card p {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  color: var(--muted);
+  font-size: .96rem;
+}
+.prompt-netzach { border-color: rgba(56,246,244,.22); }
+.prompt-arakiel { border-color: rgba(39,255,69,.18); }
+.prompt-repo { border-color: rgba(223,125,255,.20); }
+@keyframes cursorBlink { 0%, 46% { opacity: 1; } 47%, 100% { opacity: 0; } }
+
+@media (max-width: 1050px) {
+  .mood-heading { grid-template-columns: 1fr; }
+  .mood-heading h2,
+  .mood-heading p:not(.eyebrow) { justify-self: start; text-align: left; grid-column: 1; }
+  .prompt-rig { grid-template-columns: 1fr; }
+  .prompt-card { min-height: 260px; }
+}
+@media (max-width: 720px) {
+  .mood-heading h2 { font-size: clamp(2.65rem, 15vw, 4.5rem); }
+  .prompt-card { padding: 14px; border-radius: 22px; }
+  .prompt-screen { font-size: .76rem; overflow-x: auto; }
+  .prompt-card::after { font-size: 3.1rem; }
+}
