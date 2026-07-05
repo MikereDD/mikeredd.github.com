@@ -682,3 +682,116 @@ blockquote {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
   .reveal { opacity: 1; transform: none; }
 }
+
+
+/* Clickable surface polish ------------------------------------------------ */
+.card-link,
+.row-link,
+.hero-meta a,
+.ticker-track a,
+.screenshot-strip a {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.card-link:focus-visible,
+.row-link:focus-visible,
+.hero-meta a:focus-visible,
+.ticker-track a:focus-visible,
+.button:focus-visible,
+.command-copy button:focus-visible,
+.site-footer a:focus-visible,
+.nav a:focus-visible,
+.brand:focus-visible,
+.screenshot-strip a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.hero-meta a {
+  padding: 7px 10px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 999px;
+  background: rgba(255,255,255,.04);
+  color: var(--dim);
+  font: 0.75rem/1 var(--mono);
+  transition: color 160ms ease, border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+.hero-meta a:hover {
+  color: var(--accent);
+  border-color: rgba(142,240,194,.34);
+  background: rgba(142,240,194,.08);
+  transform: translateY(-1px);
+}
+
+.ticker-track a {
+  padding-right: 16px;
+  border-right: 1px solid rgba(255,255,255,.12);
+  transition: color 160ms ease, text-shadow 160ms ease;
+}
+.ticker-track a:hover {
+  color: var(--accent);
+  text-shadow: 0 0 18px rgba(142,240,194,.28);
+}
+
+.card-link::selection,
+.row-link::selection { background: rgba(142, 240, 194, 0.35); color: white; }
+
+.project-card.card-link,
+.bot-card.card-link,
+.tree-row.row-link {
+  display: grid;
+}
+.project-card.card-link {
+  grid-template-rows: auto auto auto 1fr;
+}
+.project-card.hero-project.card-link {
+  display: flex;
+}
+.project-card.card-link::after,
+.bot-card.card-link::before,
+.tree-row.row-link::after {
+  pointer-events: none;
+}
+
+.project-card.card-link:hover h3,
+.bot-card.card-link:hover h3,
+.tree-row.row-link:hover span {
+  color: var(--accent);
+}
+
+.bot-card.card-link {
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+.bot-card.card-link:hover {
+  transform: translateY(-5px);
+  border-color: rgba(142,240,194,.44);
+  background: linear-gradient(145deg, rgba(142,240,194,.09), rgba(255,255,255,.03));
+  box-shadow: 0 24px 70px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+.tree-row.row-link {
+  transition: color 160ms ease, background 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+.tree-row.row-link:hover {
+  color: var(--text);
+  background: rgba(142,240,194,.055);
+  transform: translateX(4px);
+}
+.tree-row.root.row-link:hover {
+  border-color: rgba(142,240,194,.45);
+}
+
+.screenshot-strip a {
+  display: block;
+  border-radius: 22px;
+}
+.screenshot-strip a:hover img {
+  opacity: 1;
+  border-color: rgba(142,240,194,.38);
+  transform: translateY(-3px);
+}
+.screenshot-strip img {
+  transition: opacity 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
