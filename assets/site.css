@@ -1385,3 +1385,104 @@ body::after{
 .motion-off.relationship-focus-active .project-node{
   transition:none!important;
 }
+
+
+/* === Pass 12.2: visible Return to Origin control === */
+
+.return-origin{
+  position:absolute;
+  z-index:22;
+  left:50%;
+  bottom:18px;
+  display:grid;
+  grid-template-columns:26px auto auto;
+  align-items:center;
+  gap:9px;
+  min-height:34px;
+  padding:4px 9px 4px 5px;
+  border:1px solid color-mix(in srgb,var(--focus-family,#9b6cff) 26%,var(--line));
+  border-radius:6px;
+  background:
+    linear-gradient(180deg,rgba(7,9,14,.96),rgba(3,4,7,.94));
+  box-shadow:
+    0 10px 28px rgba(0,0,0,.34),
+    inset 0 1px rgba(255,255,255,.025);
+  color:#9aa3b5;
+  opacity:0;
+  pointer-events:none;
+  transform:translate(-50%,8px);
+  transition:
+    opacity .2s ease,
+    transform .28s cubic-bezier(.2,.75,.25,1),
+    border-color .18s ease,
+    background .18s ease;
+  cursor:pointer;
+  font-family:var(--mono);
+}
+.relationship-focus-active .return-origin{
+  opacity:1;
+  pointer-events:auto;
+  transform:translate(-50%,0);
+}
+.return-origin span{
+  display:grid;
+  place-items:center;
+  width:26px;
+  height:26px;
+  border:1px solid color-mix(in srgb,var(--focus-family,#9b6cff) 38%,var(--line));
+  border-radius:50%;
+  color:var(--focus-family,#9b6cff);
+  font-size:15px;
+  line-height:1;
+  box-shadow:0 0 16px color-mix(in srgb,var(--focus-family,#9b6cff) 16%,transparent);
+}
+.return-origin b{
+  color:#c6ccda;
+  font-size:7.5px;
+  letter-spacing:.12em;
+  font-weight:700;
+  white-space:nowrap;
+}
+.return-origin small{
+  padding-left:8px;
+  border-left:1px solid rgba(255,255,255,.07);
+  color:#626c7f;
+  font-size:6.5px;
+  letter-spacing:.12em;
+}
+.return-origin:hover,
+.return-origin:focus-visible{
+  outline:none;
+  border-color:color-mix(in srgb,var(--focus-family,#9b6cff) 55%,var(--line));
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb,var(--focus-family,#9b6cff) 8%,rgba(7,9,14,.98)),
+      rgba(3,4,7,.96));
+}
+.return-origin:hover span,
+.return-origin:focus-visible span{
+  color:#fff;
+  box-shadow:0 0 20px color-mix(in srgb,var(--focus-family,#9b6cff) 28%,transparent);
+}
+.app-shell.observe .return-origin{
+  opacity:0!important;
+  pointer-events:none!important;
+}
+.motion-off .return-origin{
+  transition:none!important;
+}
+@media(max-width:900px){
+  .return-origin{
+    bottom:12px;
+    min-height:36px;
+    grid-template-columns:28px auto;
+    padding-right:10px;
+  }
+  .return-origin span{
+    width:28px;
+    height:28px;
+  }
+  .return-origin small{
+    display:none;
+  }
+}

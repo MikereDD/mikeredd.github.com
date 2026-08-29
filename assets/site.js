@@ -979,6 +979,13 @@
   ecosystem.addEventListener('pointermove',e=>{if(!dragging)return;offsetX=e.clientX-dragX;offsetY=e.clientY-dragY;setTransform()});
   ecosystem.addEventListener('pointerup',()=>dragging=false);ecosystem.addEventListener('pointercancel',()=>dragging=false);
   document.getElementById('fit-system').addEventListener('click',()=>{scale=1;offsetX=offsetY=0;setTransform();ecosystem.focus({preventScroll:true})});
+  document.getElementById('return-origin')?.addEventListener('click',()=>{
+    if(selected)closeDetail();
+    else{
+      scale=1;offsetX=offsetY=0;setTransform();
+      ecosystem.focus({preventScroll:true});
+    }
+  });
   document.getElementById('toggle-labels').addEventListener('click',e=>{const on=e.currentTarget.getAttribute('aria-pressed')==='true';e.currentTarget.setAttribute('aria-pressed',String(!on));app.classList.toggle('labels-off',on)});
   document.getElementById('toggle-motion').addEventListener('click',e=>{const on=e.currentTarget.getAttribute('aria-pressed')==='true';e.currentTarget.setAttribute('aria-pressed',String(!on));app.classList.toggle('motion-off',on);app.classList.toggle('motion-on',!on)});
   document.getElementById('core').addEventListener('click',()=>openCommand(''));
