@@ -146,7 +146,33 @@
       href:'https://github.com/MikereDD/Pixel-Watch-Themes/blob/main/assets/steampunk-reference.png',
       label:'THEME PREVIEW',
       alt:'Pixel Watch Themes Steampunk reference',
-      presentation:'landscape'
+      presentation:'landscape',
+      items:[
+        {
+          src:'https://raw.githubusercontent.com/MikereDD/Pixel-Watch-Themes/main/assets/steampunk-reference.png',
+          href:'https://github.com/MikereDD/Pixel-Watch-Themes/blob/main/assets/steampunk-reference.png',
+          alt:'Pixel Watch Themes Steampunk reference',
+          title:'STEAMPUNK'
+        },
+        {
+          src:'https://raw.githubusercontent.com/MikereDD/Pixel-Watch-Themes/main/assets/antikythera-reference.png',
+          href:'https://github.com/MikereDD/Pixel-Watch-Themes/blob/main/assets/antikythera-reference.png',
+          alt:'Pixel Watch Themes Antikythera reference',
+          title:'ANTIKYTHERA'
+        },
+        {
+          src:'https://raw.githubusercontent.com/MikereDD/Pixel-Watch-Themes/main/assets/maya-reference.png',
+          href:'https://github.com/MikereDD/Pixel-Watch-Themes/blob/main/assets/maya-reference.png',
+          alt:'Pixel Watch Themes Maya reference',
+          title:'MAYA'
+        },
+        {
+          src:'https://raw.githubusercontent.com/MikereDD/Pixel-Watch-Themes/main/assets/celestial-orrery-reference.png',
+          href:'https://github.com/MikereDD/Pixel-Watch-Themes/blob/main/assets/celestial-orrery-reference.png',
+          alt:'Pixel Watch Themes Celestial Orrery reference',
+          title:'CELESTIAL ORRERY'
+        }
+      ]
     },
     sariel:{
       src:'https://raw.githubusercontent.com/MikereDD/Sariel/main/artwork/icon.png',
