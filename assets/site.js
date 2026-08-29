@@ -688,7 +688,7 @@
     const fingerprintBars=[
       Math.min(5,1+related.length),
       p.tech.split('·').length+1,
-      tier==='hot'?5:tier==='warm'?4:tier==='cool'?3:2
+      tier==='hot'?5:tier==='warm'?4:tier==='active'?3:2
     ];
     detail.innerHTML=`<div class="detail-card">
       <button class="detail-close" type="button" aria-label="Close project details">×</button>
@@ -1039,7 +1039,10 @@
   document.querySelector('.observe-toggle').addEventListener('click',()=>{
     app.classList.toggle('observe');
     if(app.classList.contains('observe')){
-      routeLock=true;showView('system');routeLock=false;
+      routeLock=true;
+      if(selected)closeDetail();
+      showView('system');
+      routeLock=false;
       statusMessage.textContent='OBSERVE MODE · live topology';
       startObserveCycle();
     }else{
@@ -1076,8 +1079,17 @@
   });
   ecosystem.addEventListener('dblclick',()=>{
     app.classList.toggle('observe');
-    if(app.classList.contains('observe'))startObserveCycle();
-    else{stopObserveCycle();clearProjectEmphasis();clearTransientFocus();}
+    if(app.classList.contains('observe')){
+      routeLock=true;
+      if(selected)closeDetail();
+      showView('system');
+      routeLock=false;
+      statusMessage.textContent='OBSERVE MODE · live topology';
+      startObserveCycle();
+    }else{
+      stopObserveCycle();clearProjectEmphasis();clearTransientFocus();
+      statusMessage.textContent='SYSTEM READY · select a node or press / to search';
+    }
   });
 
   function filteredProjects(q){

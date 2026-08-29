@@ -111,6 +111,7 @@ The site intentionally remains lightweight:
 │   ├── site.css
 │   └── site.js
 ├── favicon.svg
+├── favicon.png
 └── .nojekyll
 ```
 
