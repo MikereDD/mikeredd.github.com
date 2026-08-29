@@ -220,7 +220,16 @@
         </div>
       </div>
       <div class="detail-actions"><a href="${repoUrl(p)}" target="_blank" rel="noopener noreferrer">OPEN REPOSITORY ↗</a><a href="${repoUrl(p)}/releases" target="_blank" rel="noopener noreferrer">RELEASES</a></div>
-      ${relationKinds.length?`<div class="relation-types"><h3>RELATIONSHIP TYPES</h3><div>${relationKinds.map(type=>`<span style="--relation:${RELATION[type].color}"><i></i>${RELATION[type].label}</span>`).join('')}</div></div>`:''}
+      ${relationKinds.length?`<div class="relation-types"><h3>RELATIONSHIP TYPES</h3><div>${relationKinds.map(type=>`<span style="--relation:${RELATION[type].color}"><i></i>${RELATION[type].label}</span>`).join('')}</div><p class="relation-explain">${relationKinds.map(type=>{
+        const copy={
+          workflow:'Participates in a direct working sequence with connected tools.',
+          lineage:'Extends design or product lineage into a related system.',
+          infrastructure:'Shares release, update, verification, or deployment infrastructure.',
+          family:'Belongs to a coordinated product or automation family.',
+          bridge:'Connects platforms or device classes that otherwise live separately.',
+          affinity:'Shares purpose, architecture, or ecosystem context.'
+        }; return copy[type]||'Connected through shared ecosystem context.';
+      }).join(' ')}</p></div>`:''}
       ${related.length?`<div class="relation-block"><h3>CONNECTED SYSTEMS</h3><div class="relation-list">${related.map(r=>{const type=relationType(p,r);return `<button class="relation-chip" data-open="${r.id}" style="--relation:${RELATION[type].color}" title="${RELATION[type].label}">${r.name}</button>`}).join('')}</div></div>`:''}
     </div>`;
     detail.querySelector('.detail-close').addEventListener('click',closeDetail);
@@ -258,13 +267,69 @@
   }
 
 
+
+  function renderEcosystemHistory(){
+    const host=document.getElementById('ecosystem-history');
+    if(!host)return;
+    const dates=projects.map(p=>{
+      const d=github.get(p.repo.toLowerCase());
+      return {p,t:new Date(d?.created_at || fallbackCreated[p.id] || '2026-01-01').getTime()};
+    }).sort((a,b)=>a.t-b.t);
+    const min=Math.min(...dates.map(x=>x.t)),max=Math.max(...dates.map(x=>x.t));
+    const span=Math.max(1,max-min);
+    host.innerHTML=`<div class="mini-timeline-track">${dates.map(({p,t})=>{
+      const pct=((t-min)/span)*100;
+      return `<button class="mini-timeline-event" type="button" data-peek-project="${p.id}" data-peek-source="history" aria-label="${p.name}" title="${p.name}" style="left:${pct}%;--family:${familyColor(p)}"><i></i></button>`;
+    }).join('')}</div>`;
+    bindProjectPeek(host);
+  }
+
+
+  function projectById(id){ return projects.find(p=>p.id===id); }
+
+  function emphasizeProject(id,source='timeline'){
+    const p=projectById(id); if(!p)return;
+    document.querySelectorAll('.project-node').forEach(n=>{
+      n.classList.toggle('is-peek',n.dataset.project===id);
+      n.classList.toggle('is-peek-muted',n.dataset.project!==id);
+    });
+    svg.querySelectorAll('.core-line').forEach(line=>{
+      line.classList.toggle('is-peek',line.dataset.coreProject===id);
+      line.classList.toggle('is-peek-muted',line.dataset.coreProject!==id);
+    });
+    const core=document.getElementById('core');
+    core.classList.add('is-peek');
+    core.style.setProperty('--peek-family',familyColor(p));
+    statusMessage.textContent=`${source.toUpperCase()} · ${p.name.toUpperCase()} · ${roles[p.id] || p.purpose}`;
+  }
+
+  function clearProjectEmphasis(){
+    document.querySelectorAll('.project-node').forEach(n=>n.classList.remove('is-peek','is-peek-muted'));
+    svg.querySelectorAll('.core-line').forEach(line=>line.classList.remove('is-peek','is-peek-muted'));
+    const core=document.getElementById('core');
+    core.classList.remove('is-peek');
+    core.style.removeProperty('--peek-family');
+    if(selected) statusMessage.textContent=`INSPECTING ${selected.name.toUpperCase()} · ${selected.platform.toUpperCase()}`;
+    else statusMessage.textContent='SYSTEM READY · select a node or press / to search';
+  }
+
+  function bindProjectPeek(root=document){
+    root.querySelectorAll('[data-peek-project]').forEach(el=>{
+      el.addEventListener('mouseenter',()=>emphasizeProject(el.dataset.peekProject,el.dataset.peekSource||'signal'));
+      el.addEventListener('mouseleave',clearProjectEmphasis);
+      el.addEventListener('focus',()=>emphasizeProject(el.dataset.peekProject,el.dataset.peekSource||'signal'));
+      el.addEventListener('blur',clearProjectEmphasis);
+      el.addEventListener('click',()=>selectProject(el.dataset.peekProject));
+    });
+  }
+
   function renderStats(){
     familyStats.innerHTML='';
     Object.entries(FAMILY).forEach(([key,f])=>{const count=projects.filter(p=>p.family===key).length; const row=document.createElement('div');row.className='family-stat';row.style.setProperty('--family',f.color);row.innerHTML=`<i></i><span>${f.label}</span><b>${count}</b>`;familyStats.append(row)});
     document.getElementById('project-count').textContent=projects.length;document.getElementById('stats-total').textContent=projects.length;
   }
 
-  function spark(p){const data=github.get(p.repo.toLowerCase());const seed=(data?.stargazers_count||0)+(data?.forks_count||0)+p.name.length;let vals=[];for(let i=0;i<16;i++)vals.push(2+((seed*(i+3)*7+i*i*5)%13));return `<span class="spark" style="--family:${familyColor(p)}">${vals.map(v=>`<b style="height:${v}px"></b>`).join('')}</span>`}
+  function spark(p){const data=github.get(p.repo.toLowerCase());const seed=(data?.stargazers_count||0)+(data?.forks_count||0)+p.name.length;let vals=[];for(let i=0;i<16;i++)vals.push(2+((seed*(i+3)*7+i*i*5)%13));return `<span class="spark" style="--family:${familyColor(p)}" aria-hidden="true">${vals.map(v=>`<b style="height:${v}px"></b>`).join('')}</span>`}
 
   function renderSignals(){
     const sorted=[...projects].sort((a,b)=>new Date(github.get(b.repo.toLowerCase())?.pushed_at||0)-new Date(github.get(a.repo.toLowerCase())?.pushed_at||0)).slice(0,6);
@@ -322,7 +387,8 @@
       const repos=await response.json(); repos.forEach(r=>github.set(r.name.toLowerCase(),r));
       const weekAgo=Date.now()-7*864e5; const active=projects.filter(p=>new Date(github.get(p.repo.toLowerCase())?.pushed_at||0).getTime()>weekAgo).length;
       document.getElementById('active-count').textContent=active;document.getElementById('last-sync').textContent='live';
-      refreshActivityState();renderSignals();renderTimeline();if(selected)selectProject(selected.id);
+      refreshActivityState();renderSignals();
+    renderEcosystemHistory();renderTimeline();if(selected)selectProject(selected.id);
     }catch(e){document.getElementById('system-status').textContent='LOCAL';document.getElementById('last-sync').textContent='cached';refreshActivityState();renderSignals();renderTimeline();}
   }
 
@@ -354,7 +420,7 @@
       const rawMin=Math.min(...created),rawMax=Math.max(...created),span=Math.max(1000*60*60*24*30,rawMax-rawMin);
       const pad=Math.max(1000*60*60*24*14,span*.08),min=rawMin-pad,max=rawMax+pad;
       const ticks=Array.from({length:5},(_,i)=>{const t=min+(max-min)*(i/4),d=new Date(t);return `<span class="history-tick" style="left:${i*25}%">${d.toLocaleDateString(undefined,{month:'short',year:'2-digit'})}</span>`}).join('');
-      alternate.innerHTML=head('Evolution over time.','Repository creation through current development.')+`<div class="history-scale">${ticks}</div><div class="history-lanes">${Object.entries(FAMILY).map(([key,f])=>{const arr=projects.filter(p=>p.family===key);const points=arr.map((p,i)=>{const d=github.get(p.repo.toLowerCase());const start=d?.created_at?new Date(d.created_at).getTime():created[projects.indexOf(p)];const pct=Math.max(0,Math.min(100,(start-min)/(max-min)*100));return `<button class="lane-point" data-open="${p.id}" title="${p.name}" aria-label="${p.name}" style="left:${pct}%"></button>`}).join('');return `<div class="history-lane" style="--family:${f.color}"><span>${f.label}</span><div class="lane-track"><i class="lane-segment" style="left:0;right:0"></i>${points}</div></div>`}).join('')}</div>`;
+      alternate.innerHTML=head('Evolution over time.','Repository creation through current development.')+`<div class="history-scale">${ticks}</div><div class="history-lanes">${Object.entries(FAMILY).map(([key,f])=>{const arr=projects.filter(p=>p.family===key);const points=arr.map((p,i)=>{const d=github.get(p.repo.toLowerCase());const start=d?.created_at?new Date(d.created_at).getTime():created[projects.indexOf(p)];const pct=Math.max(0,Math.min(100,(start-min)/(max-min)*100));return `<button class="lane-point" data-open="${p.id}" data-peek-project="${p.id}" data-peek-source="history" title="${p.name}" aria-label="${p.name}" style="left:${pct}%"></button>`}).join('');return `<div class="history-lane" style="--family:${f.color}"><span>${f.label}</span><div class="lane-track"><i class="lane-segment" style="left:0;right:0"></i>${points}</div></div>`}).join('')}</div>`;
     } else if(view==='relationships'){
       const groups=[['Audio toolchain','Siphon extracts, Seraph identifies and tags, Resound edits and mixes.',['siphon','seraph','resound']],['Studio language','Cadence and Parallax share the Typezer∅ Studio desktop identity.',['cadence','parallax']],['Time lineage','AtomicClock feeds the design language that expands into Wear OS themes.',['atomicclock','watch']],['Release infrastructure','Reusable release and update principles connect application projects.',['release','cadence','parallax','resound','couchlink']],['Automation family','The angel-named Telegram agents form a coordinated bot collection.',['kokabiel','raziel','gabriel','sandalphon','selaphiel','zaphkiel']],['Library systems','Mnemosyne organizes media while Music Library Repair focuses on safe correction and normalization.',['mnemosyne','musicrepair']]];
       alternate.innerHTML=head('Ideas have lineage.','Workflows, shared standards, and project families.')+`<div class="relations-grid">${groups.map(g=>`<article class="relation-card"><h3>${g[0]}</h3><p>${g[1]}</p><div class="relation-flow">${g[2].map((id,i)=>`${i?'<i>→</i>':''}<button data-open="${id}">${projects.find(p=>p.id===id).name}</button>`).join('')}</div></article>`).join('')}</div>`;

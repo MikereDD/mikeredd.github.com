@@ -1,33 +1,34 @@
-TYPEZER∅ System — Pass 4 Overlay
-IDENTITY / DEPTH
+TYPEZER∅ System — Pass 5 Overlay
+INTERACTIVE HISTORY / SIGNAL / INSPECTION
 
 Copy contents over:
 G:\Forgejo\mikeredd.github.com
 
-Working branch:
+Branch:
 redesign/typezero-system
 
-Files replaced:
+Replaces:
 - index.html
 - assets/site.css
 - assets/site.js
 
-Pass 4 adds:
-- Family-specific ∅ core geometry when a project is selected.
-- Semantic relationship classes:
-  WORKFLOW, LINEAGE, INFRASTRUCTURE, FAMILY, PLATFORM BRIDGE, SHARED SYSTEM.
-- Relationship lines now use distinct rhythm/color when focused.
-- Inspector now includes a compact PROJECT FINGERPRINT for:
-  connections, complexity, and activity.
-- Inspector exposes relationship types for the current project.
-- Connected-system chips inherit the meaning/color of their relationship.
-- Pass 3.1 stability and reduced-motion behavior preserved.
-- Cache version bumped to v40.
+Pass 5:
+- Lower Signal feed becomes interactive.
+- Hover/focus a recent project -> the graph temporarily isolates that system.
+- Ecosystem History becomes an interactive project timeline.
+- Hover/focus a timeline event -> graph echoes the project and family.
+- Clicking a Signal or History event opens the project inspector.
+- Full History lane points gain the same cross-link behavior.
+- Inspector relationship types now explain WHY the project is connected.
+- Graph emphasis clears cleanly when hover/focus ends.
+- Pass 4 relationship semantics and core family physics remain intact.
+- Reduced-motion behavior preserved.
+- Cache version bumped to v50.
 
-Recommended projects to inspect:
-- Siphon / Seraph / Resound      -> workflow
-- AtomicClock / Pixel Watch     -> lineage
-- Release Standards             -> infrastructure
-- CouchLink                     -> bridge + infrastructure
-- Cadence / Parallax            -> family + infrastructure
-- Any Telegram bot              -> automation family
+Recommended test:
+1. Hover each lower Signal item.
+2. Hover several timeline dots.
+3. Click one timeline dot and confirm inspector opens.
+4. Open History view and hover/click lane points.
+5. Select Release Standards, then hover lower timeline events.
+6. Keyboard-tab through Signal and History controls.

@@ -247,3 +247,71 @@
 @media(prefers-reduced-motion:reduce){
   #core::before,#core::after{transition:none!important}
 }
+
+
+/* === Pass 5: interactive history / signal / inspection depth === */
+.project-node.is-peek{opacity:1!important;filter:none!important;z-index:12}
+.project-node.is-peek .node-orb{
+  transform:scale(1.14);
+  box-shadow:0 0 0 2px color-mix(in srgb,var(--family) 36%,transparent),0 0 30px color-mix(in srgb,var(--family) 44%,transparent);
+}
+.project-node.is-peek-muted{opacity:.2!important}
+.core-line.is-peek{stroke-opacity:.8!important;stroke-width:1.6!important;filter:drop-shadow(0 0 5px currentColor)}
+.core-line.is-peek-muted{stroke-opacity:.035!important}
+#core.is-peek{
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--peek-family) 55%,transparent),0 0 38px color-mix(in srgb,var(--peek-family) 26%,transparent),inset 0 0 26px rgba(155,108,255,.08);
+}
+
+.signal-button{
+  width:100%;
+  border:0;
+  background:transparent;
+  color:inherit;
+  text-align:left;
+  cursor:pointer;
+}
+.signal-button:hover,.signal-button:focus-visible{
+  background:color-mix(in srgb,var(--family) 7%,transparent);
+  outline:1px solid color-mix(in srgb,var(--family) 24%,transparent);
+}
+.signal-item.signal-button{border-radius:4px;padding-left:6px;padding-right:5px}
+
+#ecosystem-history{position:relative;min-height:76px}
+.mini-timeline-track{
+  position:absolute;left:28px;right:18px;top:50%;height:1px;
+  background:linear-gradient(90deg,rgba(174,184,214,.08),rgba(174,184,214,.2),rgba(174,184,214,.08));
+}
+.mini-timeline-event{
+  appearance:none;position:absolute;top:50%;transform:translate(-50%,-50%);
+  width:11px;height:11px;padding:0;border-radius:999px;
+  border:1px solid color-mix(in srgb,var(--family) 70%,#fff);
+  background:var(--family);cursor:pointer;
+  box-shadow:0 0 10px color-mix(in srgb,var(--family) 46%,transparent);
+  transition:transform .15s ease,box-shadow .15s ease;
+}
+.mini-timeline-event:hover,.mini-timeline-event:focus-visible{
+  transform:translate(-50%,-50%) scale(1.65);
+  box-shadow:0 0 18px color-mix(in srgb,var(--family) 70%,transparent);
+  outline:none;z-index:3;
+}
+
+.relation-explain{
+  margin:10px 0 0;
+  color:#777f90;
+  font-size:.72rem;
+  line-height:1.55;
+}
+.history-lane .lane-point:focus-visible{
+  outline:2px solid var(--family);
+  outline-offset:3px;
+}
+.alternate-view .lane-point:hover{
+  box-shadow:0 0 18px color-mix(in srgb,var(--family) 65%,transparent);
+}
+
+@media(max-width:900px){
+  .mini-timeline-track{left:12px;right:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  .project-node.is-peek .node-orb,.mini-timeline-event{transition:none!important}
+}
