@@ -6,7 +6,7 @@
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#03050a">
   <title>404 // ORIGIN VECTOR LOST</title>
-  <link rel="icon" href="favicon.png">
+  <link rel="icon" href="/favicon.png">
   <style>
     :root{
       --bg:#03050a;
@@ -334,7 +334,7 @@
         <h1>THIS ROUTE DOES NOT EXIST.<span>THE OBSERVATORY CANNOT RESOLVE THIS NODE.</span></h1>
         <p class="copy">The requested coordinate fell outside the known Typezer∅ system map. No project, signal, or historical route is attached to this vector.</p>
         <div class="actions">
-          <a class="return" href="./" id="return-home"><span>∅</span>RETURN TO ORIGIN<small>R</small></a>
+          <a class="return" href="/" id="return-home"><span>∅</span>RETURN TO ORIGIN<small>R</small></a>
         </div>
       </section>
 
@@ -390,8 +390,8 @@
         lock.textContent = 'STATIC';
       }
 
-      // On project pages GitHub Pages may resolve the 404 from a nested-looking URL.
-      // "./" reliably returns to the site root in the local preview and published root site.
+      // This is a GitHub Pages user-site repository, so "/" is the canonical origin.
+      // Using an absolute root avoids "./" resolving inside nested missing routes.
       returnHome.addEventListener('click', () => {
         sessionStorage.setItem('typezero-recovered-from-404', '1');
       });
