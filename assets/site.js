@@ -73,14 +73,66 @@
       href:'https://github.com/MikereDD/Cadence-Studio/blob/main/docs/images/cadence-library.png',
       label:'INTERFACE PREVIEW',
       alt:'Cadence Studio library and Now Playing workspace',
-      presentation:'landscape'
+      presentation:'landscape',
+      items:[
+        {
+          src:'https://raw.githubusercontent.com/MikereDD/Cadence-Studio/main/docs/images/cadence-library.png',
+          href:'https://github.com/MikereDD/Cadence-Studio/blob/main/docs/images/cadence-library.png',
+          alt:'Cadence Studio library and Now Playing workspace',
+          title:'LIBRARY'
+        },
+        {
+          src:'https://raw.githubusercontent.com/MikereDD/Cadence-Studio/main/docs/images/cadence-visualizer.png',
+          href:'https://github.com/MikereDD/Cadence-Studio/blob/main/docs/images/cadence-visualizer.png',
+          alt:'Cadence Studio visualizer',
+          title:'VISUALIZER'
+        },
+        {
+          src:'https://raw.githubusercontent.com/MikereDD/Cadence-Studio/main/docs/images/cadence-settings.png',
+          href:'https://github.com/MikereDD/Cadence-Studio/blob/main/docs/images/cadence-settings.png',
+          alt:'Cadence Studio settings',
+          title:'SETTINGS'
+        }
+      ]
     },
     couchlink:{
       src:'https://raw.githubusercontent.com/MikereDD/CouchLink/main/docs/screenshots/windows-host-audio-output.png',
       href:'https://github.com/MikereDD/CouchLink/blob/main/docs/screenshots/windows-host-audio-output.png',
       label:'INTERFACE PREVIEW',
       alt:'CouchLink Windows Host and Audio Output',
-      presentation:'landscape'
+      presentation:'landscape',
+      items:[
+        {
+          src:'https://raw.githubusercontent.com/MikereDD/CouchLink/main/docs/screenshots/windows-host-audio-output.png',
+          href:'https://github.com/MikereDD/CouchLink/blob/main/docs/screenshots/windows-host-audio-output.png',
+          alt:'CouchLink Windows Host and Audio Output',
+          title:'WINDOWS HOST'
+        },
+        {
+          src:'https://raw.githubusercontent.com/MikereDD/CouchLink/main/docs/screenshots/home.png',
+          href:'https://github.com/MikereDD/CouchLink/blob/main/docs/screenshots/home.png',
+          alt:'CouchLink Android home screen',
+          title:'HOME'
+        },
+        {
+          src:'https://raw.githubusercontent.com/MikereDD/CouchLink/main/docs/screenshots/keyboard.png',
+          href:'https://github.com/MikereDD/CouchLink/blob/main/docs/screenshots/keyboard.png',
+          alt:'CouchLink keyboard screen',
+          title:'KEYBOARD'
+        },
+        {
+          src:'https://raw.githubusercontent.com/MikereDD/CouchLink/main/docs/screenshots/touchpad.png',
+          href:'https://github.com/MikereDD/CouchLink/blob/main/docs/screenshots/touchpad.png',
+          alt:'CouchLink touchpad screen',
+          title:'TOUCHPAD'
+        },
+        {
+          src:'https://raw.githubusercontent.com/MikereDD/CouchLink/main/docs/screenshots/tv-remote.png',
+          href:'https://github.com/MikereDD/CouchLink/blob/main/docs/screenshots/tv-remote.png',
+          alt:'CouchLink TV remote screen',
+          title:'TV REMOTE'
+        }
+      ]
     },
     atomicclock:{
       src:'https://raw.githubusercontent.com/MikereDD/AtomicClock/main/docs/images/widget-themes.png',
@@ -244,13 +296,23 @@
     const family=FAMILY[p.family];
     const role=roles[p.id] || p.purpose;
     if(media.kind==='project'){
-      return `<div class="project-media" style="--family:${familyColor(p)};--media-x:${media.mediaX||'0px'};--media-y:${media.mediaY||'0px'};--media-scale:${media.mediaScale||1}" data-media-kind="${media.kind}" data-media-presentation="${media.presentation||'landscape'}">
-        <a class="project-media-frame" href="${media.href}" target="_blank" rel="noopener noreferrer" aria-label="Open ${media.label.toLowerCase()} for ${p.name}">
-          <img src="${media.src}" alt="${media.alt}" loading="lazy" decoding="async">
+      const items=Array.isArray(media.items)&&media.items.length?media.items:[media];
+      const rawIndex=mediaIndexByProject.get(p.id)||0;
+      const index=((rawIndex%items.length)+items.length)%items.length;
+      const active=items[index];
+      const gallery=items.length>1;
+      return `<div class="project-media" style="--family:${familyColor(p)};--media-x:${media.mediaX||'0px'};--media-y:${media.mediaY||'0px'};--media-scale:${media.mediaScale||1}" data-media-kind="${media.kind}" data-media-presentation="${media.presentation||'landscape'}" data-media-project="${p.id}">
+        <a class="project-media-frame" href="${active.href||media.href}" target="_blank" rel="noopener noreferrer" aria-label="Open ${(active.title||media.label).toLowerCase()} for ${p.name}">
+          <img src="${active.src||media.src}" alt="${active.alt||media.alt}" loading="lazy" decoding="async">
           <span class="project-media-fallback" aria-hidden="true"><b>${p.glyph}</b><small>${p.name}</small></span>
           <i class="project-media-scan" aria-hidden="true"></i>
         </a>
-        <div class="project-media-meta"><span>${media.label}</span><small>PROJECT-NATIVE MEDIA</small></div>
+        ${gallery?`<div class="project-media-gallery" aria-label="${p.name} media gallery">
+          <button type="button" data-media-prev aria-label="Previous ${p.name} media">‹</button>
+          <span title="Use gallery arrows or Shift+[ / Shift+]"><b data-media-title>${active.title||media.label}</b><small data-media-count>${index+1} / ${items.length}</small></span>
+          <button type="button" data-media-next aria-label="Next ${p.name} media">›</button>
+        </div>`:''}
+        <div class="project-media-meta"><span>${media.label}</span><small>${gallery?'NATIVE MEDIA GALLERY':'PROJECT-NATIVE MEDIA'}</small></div>
       </div>`;
     }
     return `<div class="project-media generated-media" style="--family:${familyColor(p)}" data-media-kind="generated">
@@ -279,6 +341,55 @@
         if(img.naturalWidth) wrap?.classList.add('media-loaded');
         else wrap?.classList.add('media-failed');
       }
+    });
+  }
+
+  function galleryItemsFor(p){
+    const media=PROJECT_MEDIA[p.id];
+    return Array.isArray(media?.items)&&media.items.length>1?media.items:null;
+  }
+
+  function stepProjectMedia(p,delta,root=detail){
+    const items=galleryItemsFor(p);
+    if(!items)return false;
+    const current=mediaIndexByProject.get(p.id)||0;
+    const next=(current+delta+items.length)%items.length;
+    mediaIndexByProject.set(p.id,next);
+
+    const wrap=root.querySelector(`.project-media[data-media-project="${p.id}"]`);
+    if(!wrap)return false;
+    const item=items[next];
+    const anchor=wrap.querySelector('.project-media-frame');
+    const img=wrap.querySelector('img');
+    const title=wrap.querySelector('[data-media-title]');
+    const count=wrap.querySelector('[data-media-count]');
+
+    wrap.classList.remove('media-failed');
+    wrap.classList.add('media-switching');
+    if(anchor){
+      anchor.href=item.href||PROJECT_MEDIA[p.id].href;
+      anchor.setAttribute('aria-label',`Open ${(item.title||PROJECT_MEDIA[p.id].label).toLowerCase()} for ${p.name}`);
+    }
+    if(img){
+      img.alt=item.alt||PROJECT_MEDIA[p.id].alt;
+      img.src=item.src||PROJECT_MEDIA[p.id].src;
+      if(img.complete && img.naturalWidth) wrap.classList.add('media-loaded');
+    }
+    if(title)title.textContent=item.title||PROJECT_MEDIA[p.id].label;
+    if(count)count.textContent=`${next+1} / ${items.length}`;
+    statusMessage.textContent=`${p.name.toUpperCase()} · MEDIA ${next+1}/${items.length} · ${(item.title||'PREVIEW').toUpperCase()}`;
+    setTimeout(()=>wrap.classList.remove('media-switching'),180);
+    return true;
+  }
+
+  function bindMediaGallery(root,p){
+    const items=galleryItemsFor(p);
+    if(!items)return;
+    root.querySelector('[data-media-prev]')?.addEventListener('click',e=>{
+      e.preventDefault();e.stopPropagation();stepProjectMedia(p,-1,root);
+    });
+    root.querySelector('[data-media-next]')?.addEventListener('click',e=>{
+      e.preventDefault();e.stopPropagation();stepProjectMedia(p,1,root);
     });
   }
 
@@ -319,6 +430,7 @@
   let dragging = false, dragX = 0, dragY = 0;
   let commandSelection = 0;
   let routeLock = false;
+  const mediaIndexByProject = new Map();
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   app.classList.add(reducedMotion ? 'motion-off' : 'motion-on');
 
@@ -469,6 +581,7 @@
       ${related.length?`<div class="relation-block"><h3>CONNECTED SYSTEMS</h3><div class="relation-list">${related.map(r=>{const type=relationType(p,r);return `<button class="relation-chip" data-open="${r.id}" style="--relation:${RELATION[type].color}" title="${RELATION[type].label}">${r.name}</button>`}).join('')}</div></div>`:''}
     </div>`;
     bindMediaFallback(detail);
+    bindMediaGallery(detail,p);
     detail.querySelector('.detail-close').addEventListener('click',closeDetail);
     detail.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>selectProject(b.dataset.open)));
     detail.querySelectorAll('[data-project-nav]').forEach(b=>b.addEventListener('click',()=>{
@@ -794,8 +907,13 @@
     }
     if(!typing && app.dataset.view==='system' && (e.code==='BracketLeft' || e.code==='BracketRight')){
       e.preventDefault();
-      const ordered=projectOrder();
       const delta=e.code==='BracketLeft'?-1:1;
+
+      // Preserve the original [ / ] project navigation.
+      // Hold Shift to step through native media for the selected project.
+      if(e.shiftKey && selected && stepProjectMedia(selected,delta))return;
+
+      const ordered=projectOrder();
       const base=selected?.id || (delta<0?ordered[0]?.id:ordered.at(-1)?.id);
       const next=base?adjacentProject(base,delta):ordered[0];
       if(next)selectProject(next.id);
