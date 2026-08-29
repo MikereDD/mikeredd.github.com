@@ -52,7 +52,7 @@
     kokabiel:[87,40],raziel:[90,49],gabriel:[90,58],sandalphon:[87,67],selaphiel:[82,75],zaphkiel:[75,81],
     musicrepair:[39,86],mnemosyne:[52,89],release:[65,86]
   };
-  const familyLabels = {studio:[51,7],android:[13,20],wear:[84,17],automation:[91,31],engineering:[52,75]};
+  const familyLabels = {studio:[51,10],android:[15,27],wear:[84,20],automation:[90,35],engineering:[52,78]};
 
   const app = document.querySelector('.app-shell');
   const nodesHost = document.getElementById('nodes');
@@ -79,6 +79,15 @@
 
   const repoUrl = p => `https://github.com/MikereDD/${p.repo}`;
   const familyColor = p => FAMILY[p.family].color;
+  const activityTier = iso => {
+    if(!iso) return 'quiet';
+    const age=Date.now()-new Date(iso).getTime();
+    if(age < 2*864e5) return 'hot';
+    if(age < 7*864e5) return 'warm';
+    if(age < 30*864e5) return 'active';
+    return 'quiet';
+  };
+  const projectActivity = p => { const d=github.get(p.repo.toLowerCase()); return d?.pushed_at || d?.updated_at || null; };
   const formatAgo = iso => {
     if (!iso) return 'unknown';
     const s = Math.max(1, (Date.now() - new Date(iso).getTime()) / 1000);
@@ -95,8 +104,8 @@
       const tag=document.createElement('div'); tag.className='family-tag'; tag.style.left=`${x}%`;tag.style.top=`${y}%`;tag.style.setProperty('--family',FAMILY[key].color);tag.innerHTML=`${FAMILY[key].label}<small>${FAMILY[key].sub}</small>`;nodesHost.append(tag);
     });
     projects.forEach(p=>{
-      const [x,y]=positions[p.id]; const node=document.createElement('button'); node.className='project-node';node.dataset.project=p.id;node.style.left=`${x}%`;node.style.top=`${y}%`;node.style.setProperty('--family',familyColor(p));
-      node.innerHTML=`<span class="node-body"><span class="node-orb">${p.glyph}</span><span class="node-copy"><strong>${p.name}</strong><small>${roles[p.id] || p.purpose}</small></span></span>`;
+      const [x,y]=positions[p.id]; const node=document.createElement('button'); node.className=`project-node family-${p.family}`;node.dataset.project=p.id;node.dataset.family=p.family;node.dataset.activity=activityTier(projectActivity(p));node.style.left=`${x}%`;node.style.top=`${y}%`;node.style.setProperty('--family',familyColor(p));
+      node.innerHTML=`<span class="node-body"><span class="node-orb"><span class="node-sigil">${p.glyph}</span><i class="activity-ring" aria-hidden="true"></i></span><span class="node-copy"><strong>${p.name}</strong><small>${roles[p.id] || p.purpose}</small></span></span>`;
       node.addEventListener('click',e=>{e.stopPropagation();selectProject(p.id)});nodesHost.append(node);
       lineToCore(p);
     });
@@ -106,7 +115,7 @@
   function lineToCore(p){
     const [x,y]=positions[p.id], cx=50, cy=53;
     const line=document.createElementNS('http://www.w3.org/2000/svg','line');
-    line.setAttribute('x1',`${cx}%`);line.setAttribute('y1',`${cy}%`);line.setAttribute('x2',`${x}%`);line.setAttribute('y2',`${y}%`);line.setAttribute('stroke',familyColor(p));line.setAttribute('stroke-opacity','.16');line.setAttribute('stroke-width','1');line.dataset.family=p.family;line.dataset.coreProject=p.id;line.classList.add('core-line');svg.append(line);
+    line.setAttribute('x1',`${cx}%`);line.setAttribute('y1',`${cy}%`);line.setAttribute('x2',`${x}%`);line.setAttribute('y2',`${y}%`);line.setAttribute('stroke',familyColor(p));line.setAttribute('stroke-opacity','.16');line.setAttribute('stroke-width','1');line.dataset.family=p.family;line.dataset.coreProject=p.id;line.classList.add('core-line');line.dataset.activity=activityTier(projectActivity(p));svg.append(line);
   }
 
   function relationshipLines(){
@@ -140,6 +149,8 @@
   function closeDetail(){
     selected=null;
     app.classList.remove('detail-open');
+    delete app.dataset.focusFamily;
+    app.style.removeProperty('--focus-family');
     document.querySelectorAll('.project-node').forEach(n=>n.classList.remove('is-active','is-related','is-dimmed'));
     updateRelationshipFocus();
     detail.innerHTML='<div class="detail-empty"><span class="detail-glyph">∅</span><p>SELECT A SYSTEM</p><h2>Explore the graph.</h2><span>Choose any project node to inspect its role, technology, relationships, activity, and repository.</span></div>';
@@ -149,6 +160,9 @@
   function selectProject(id){
     const p=projects.find(x=>x.id===id); if(!p)return; selected=p;
     app.classList.add('detail-open');
+    app.dataset.focusFamily=p.family;
+    app.style.setProperty('--focus-family',familyColor(p));
+    pulseCore(familyColor(p));
     document.querySelectorAll('.project-node').forEach(n=>n.classList.toggle('is-active',n.dataset.project===id));
     updateRelationshipFocus(id);
     const data=github.get(p.repo.toLowerCase()); const activity=data?.pushed_at || data?.updated_at;
@@ -165,6 +179,34 @@
     detail.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>selectProject(b.dataset.open)));
     statusMessage.textContent=`INSPECTING ${p.name.toUpperCase()} · ${p.platform.toUpperCase()}`;
     if(innerWidth<900) detail.scrollIntoView({behavior:reducedMotion?'auto':'smooth',block:'start'});
+  }
+
+
+  function pulseCore(color){
+    if(reducedMotion || app.classList.contains('motion-off')) return;
+    const core=document.getElementById('core');
+    const pulse=document.createElement('i');
+    pulse.className='core-burst';
+    pulse.style.setProperty('--burst',color);
+    core.append(pulse);
+    pulse.addEventListener('animationend',()=>pulse.remove(),{once:true});
+  }
+
+  function refreshActivityState(){
+    document.querySelectorAll('.project-node').forEach(node=>{
+      const p=projects.find(x=>x.id===node.dataset.project); if(!p)return;
+      node.dataset.activity=activityTier(projectActivity(p));
+    });
+    svg.querySelectorAll('.core-line').forEach(line=>{
+      const p=projects.find(x=>x.id===line.dataset.coreProject); if(!p)return;
+      line.dataset.activity=activityTier(projectActivity(p));
+    });
+    const ranked=[...projects].sort((a,b)=>new Date(projectActivity(b)||0)-new Date(projectActivity(a)||0));
+    const newest=ranked.find(p=>projectActivity(p));
+    if(newest){
+      app.dataset.latestProject=newest.id;
+      document.documentElement.style.setProperty('--latest-family',familyColor(newest));
+    }
   }
 
 
@@ -232,16 +274,16 @@
       const repos=await response.json(); repos.forEach(r=>github.set(r.name.toLowerCase(),r));
       const weekAgo=Date.now()-7*864e5; const active=projects.filter(p=>new Date(github.get(p.repo.toLowerCase())?.pushed_at||0).getTime()>weekAgo).length;
       document.getElementById('active-count').textContent=active;document.getElementById('last-sync').textContent='live';
-      renderSignals();renderTimeline();if(selected)selectProject(selected.id);
-    }catch(e){document.getElementById('system-status').textContent='LOCAL';document.getElementById('last-sync').textContent='cached';renderSignals();renderTimeline();}
+      refreshActivityState();renderSignals();renderTimeline();if(selected)selectProject(selected.id);
+    }catch(e){document.getElementById('system-status').textContent='LOCAL';document.getElementById('last-sync').textContent='cached';refreshActivityState();renderSignals();renderTimeline();}
   }
 
   function setTransform(){const t=`translate(${offsetX}px,${offsetY}px) scale(${scale})`;svg.style.transform=t;nodesHost.style.transform=t;document.querySelector('.rings').style.transform=t;document.getElementById('core').style.transform=`translate(calc(-50% + ${offsetX}px),calc(-50% + ${offsetY}px)) scale(${scale})`}
-  ecosystem.addEventListener('wheel',e=>{e.preventDefault();scale=Math.max(.75,Math.min(1.45,scale+(e.deltaY<0?.06:-.06)));setTransform()},{passive:false});
+  ecosystem.addEventListener('wheel',e=>{e.preventDefault();scale=Math.max(.86,Math.min(1.34,scale+(e.deltaY<0?.055:-.055)));setTransform()},{passive:false});
   ecosystem.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;dragging=true;dragX=e.clientX-offsetX;dragY=e.clientY-offsetY;ecosystem.setPointerCapture(e.pointerId)});
   ecosystem.addEventListener('pointermove',e=>{if(!dragging)return;offsetX=e.clientX-dragX;offsetY=e.clientY-dragY;setTransform()});
   ecosystem.addEventListener('pointerup',()=>dragging=false);ecosystem.addEventListener('pointercancel',()=>dragging=false);
-  document.getElementById('fit-system').addEventListener('click',()=>{scale=1;offsetX=offsetY=0;setTransform()});
+  document.getElementById('fit-system').addEventListener('click',()=>{scale=1;offsetX=offsetY=0;setTransform();ecosystem.focus({preventScroll:true})});
   document.getElementById('toggle-labels').addEventListener('click',e=>{const on=e.currentTarget.getAttribute('aria-pressed')==='true';e.currentTarget.setAttribute('aria-pressed',String(!on));app.classList.toggle('labels-off',on)});
   document.getElementById('toggle-motion').addEventListener('click',e=>{const on=e.currentTarget.getAttribute('aria-pressed')==='true';e.currentTarget.setAttribute('aria-pressed',String(!on));app.classList.toggle('motion-off',on);app.classList.toggle('motion-on',!on)});
   document.getElementById('core').addEventListener('click',()=>openCommand(''));
@@ -260,8 +302,11 @@
       const sorted=[...projects].sort((a,b)=>new Date(github.get(b.repo.toLowerCase())?.pushed_at||0)-new Date(github.get(a.repo.toLowerCase())?.pushed_at||0));
       alternate.innerHTML=head('Repository signal.','Live GitHub activity when available.')+`<div class="signal-big">${sorted.map(p=>{const d=github.get(p.repo.toLowerCase());return `<button class="signal-big-row" data-open="${p.id}" style="--family:${familyColor(p)}"><b>${p.name}</b><span>${d?.description||p.purpose}</span><small>${d?.language||p.language}</small><small>${formatAgo(d?.pushed_at)}</small></button>`}).join('')}</div>`;
     } else if(view==='history'){
-      const min=new Date('2022-01-01').getTime(),max=new Date('2027-01-01').getTime();
-      alternate.innerHTML=head('Evolution over time.','Repository creation through current development.')+`<div class="history-lanes">${Object.entries(FAMILY).map(([key,f])=>{const arr=projects.filter(p=>p.family===key);const points=arr.map((p,i)=>{const d=github.get(p.repo.toLowerCase());const start=d?.created_at?new Date(d.created_at).getTime():new Date(`2025-${String((i%12)+1).padStart(2,'0')}-01`).getTime();const pct=Math.max(0,Math.min(100,(start-min)/(max-min)*100));return `<button class="lane-point" data-open="${p.id}" title="${p.name}" style="left:${pct}%"></button>`}).join('');return `<div class="history-lane" style="--family:${f.color}"><span>${f.label}</span><div class="lane-track"><i class="lane-segment" style="left:0;right:0"></i>${points}</div></div>`}).join('')}</div>`;
+      const created=projects.map((p,i)=>{const d=github.get(p.repo.toLowerCase());return d?.created_at?new Date(d.created_at).getTime():new Date(`2025-${String((i%12)+1).padStart(2,'0')}-01`).getTime()});
+      const rawMin=Math.min(...created),rawMax=Math.max(...created),span=Math.max(1000*60*60*24*30,rawMax-rawMin);
+      const pad=Math.max(1000*60*60*24*14,span*.08),min=rawMin-pad,max=rawMax+pad;
+      const ticks=Array.from({length:5},(_,i)=>{const t=min+(max-min)*(i/4),d=new Date(t);return `<span class="history-tick" style="left:${i*25}%">${d.toLocaleDateString(undefined,{month:'short',year:'2-digit'})}</span>`}).join('');
+      alternate.innerHTML=head('Evolution over time.','Repository creation through current development.')+`<div class="history-scale">${ticks}</div><div class="history-lanes">${Object.entries(FAMILY).map(([key,f])=>{const arr=projects.filter(p=>p.family===key);const points=arr.map((p,i)=>{const d=github.get(p.repo.toLowerCase());const start=d?.created_at?new Date(d.created_at).getTime():created[projects.indexOf(p)];const pct=Math.max(0,Math.min(100,(start-min)/(max-min)*100));return `<button class="lane-point" data-open="${p.id}" title="${p.name}" aria-label="${p.name}" style="left:${pct}%"></button>`}).join('');return `<div class="history-lane" style="--family:${f.color}"><span>${f.label}</span><div class="lane-track"><i class="lane-segment" style="left:0;right:0"></i>${points}</div></div>`}).join('')}</div>`;
     } else if(view==='relationships'){
       const groups=[['Audio toolchain','Siphon extracts, Seraph identifies and tags, Resound edits and mixes.',['siphon','seraph','resound']],['Studio language','Cadence and Parallax share the Typezer∅ Studio desktop identity.',['cadence','parallax']],['Time lineage','AtomicClock feeds the design language that expands into Wear OS themes.',['atomicclock','watch']],['Release infrastructure','Reusable release and update principles connect application projects.',['release','cadence','parallax','resound','couchlink']],['Automation family','The angel-named Telegram agents form a coordinated bot collection.',['kokabiel','raziel','gabriel','sandalphon','selaphiel','zaphkiel']],['Library systems','Mnemosyne organizes media while Music Library Repair focuses on safe correction and normalization.',['mnemosyne','musicrepair']]];
       alternate.innerHTML=head('Ideas have lineage.','Workflows, shared standards, and project families.')+`<div class="relations-grid">${groups.map(g=>`<article class="relation-card"><h3>${g[0]}</h3><p>${g[1]}</p><div class="relation-flow">${g[2].map((id,i)=>`${i?'<i>→</i>':''}<button data-open="${id}">${projects.find(p=>p.id===id).name}</button>`).join('')}</div></article>`).join('')}</div>`;
@@ -270,7 +315,7 @@
   }
 
   document.querySelectorAll('[data-view-target]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.viewTarget)));
-  document.querySelector('.observe-toggle').addEventListener('click',()=>{app.classList.toggle('observe');if(app.classList.contains('observe'))showView('system')});
+  document.querySelector('.observe-toggle').addEventListener('click',()=>{app.classList.toggle('observe');if(app.classList.contains('observe')){showView('system');statusMessage.textContent='OBSERVE MODE · live topology';}else statusMessage.textContent='SYSTEM READY · select a node or press / to search'});
   addEventListener('keydown',e=>{if(e.key==='/'&&!commandDialog.open&&document.activeElement.tagName!=='INPUT'){e.preventDefault();openCommand('')}if(e.key==='Escape'&&app.classList.contains('observe'))app.classList.remove('observe')});
   ecosystem.addEventListener('dblclick',()=>app.classList.toggle('observe'));
 
@@ -286,5 +331,5 @@
   commandInput.addEventListener('keydown',e=>{const rows=filteredProjects(commandInput.value);if(e.key==='ArrowDown'){e.preventDefault();commandSelection=Math.min(rows.length-1,commandSelection+1);renderCommand(commandInput.value)}else if(e.key==='ArrowUp'){e.preventDefault();commandSelection=Math.max(0,commandSelection-1);renderCommand(commandInput.value)}else if(e.key==='Enter'&&rows[commandSelection]){e.preventDefault();commandDialog.close();showView('system');selectProject(rows[commandSelection].id)}});
 
   addEventListener('resize',()=>{clearTimeout(window.__tzTimelineResize);window.__tzTimelineResize=setTimeout(renderTimeline,120)});
-  renderMap();renderStats();renderSignals();renderTimeline();loadGitHub();
+  renderMap();refreshActivityState();renderStats();renderSignals();renderTimeline();loadGitHub();
 })();

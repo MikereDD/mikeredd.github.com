@@ -1,34 +1,33 @@
-TYPEZER∅ System — Pass 2 Overlay
+TYPEZER∅ System — Pass 3.1 Corrective Overlay
 
-Copy the CONTENTS of this overlay directly over the root of:
+Copy the CONTENTS over:
 G:\Forgejo\mikeredd.github.com
 
 Branch:
 redesign/typezero-system
 
-Files replaced:
+Replaces only:
 - index.html
 - assets/site.css
 - assets/site.js
 
-Pass 2 changes:
-- Detail panel is collapsed until a project is selected.
-- System map reclaims the full width when no project is selected.
-- Project nodes use compact semantic role labels instead of truncated descriptions.
-- Node typography and geometry are larger and cleaner.
-- Project-to-project relationship lines are more visible.
-- Selecting a project highlights connected systems and dims unrelated systems.
-- Added a close control to return the map to its full-system state.
-- Timeline now scales dynamically around the actual project creation range instead of forcing a 2022–2027 axis.
-- Timeline ticks use month/year labels and resize with the viewport.
-- Browser cache version bumped to v21.
+Corrections:
+- Moves FIT SYSTEM / LABELS / MOTION into a safer, visibly framed control strip
+  lower inside the map so the sticky header cannot visually clamp it.
+- Moves family labels away from the headline collision zone.
+- Restricts map zoom-out to a useful range and makes FIT SYSTEM restore focus.
+- Repairs Signal view's accidental native grey-button appearance.
+- Rebuilds History around actual repository creation dates with a padded,
+  adaptive time range and readable month/year ticks.
+- Adds safer intermediate-width behavior for the graph + inspector.
+- Keeps reduced-motion and all Pass 3 living-system behavior intact.
+- Cache version bumped to v311.
 
-After copying:
-  git diff
-  git status
-  python -m http.server 8080
-
-Then open:
-  http://localhost:8080
-
-Nothing in this overlay deletes repository files.
+Suggested regression test:
+1. System -> select project -> close inspector -> select another.
+2. Signal / History / Relations / Index -> back to System.
+3. Toggle LABELS and MOTION repeatedly.
+4. Zoom/drag map, then FIT SYSTEM.
+5. Browser zoom 90%, 110%, 125%.
+6. Resize around ~1000-1400 px while inspector is open.
+7. Observe mode -> exit -> confirm toolbar/header restore.
