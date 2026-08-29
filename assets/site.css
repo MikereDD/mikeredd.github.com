@@ -638,3 +638,46 @@ body::after{
   border:1px dashed color-mix(in srgb,var(--family) 18%,transparent);
   pointer-events:none;
 }
+
+
+/* === Pass 8.3: media priority + inspector usability === */
+.detail-panel{
+  overflow:hidden;
+}
+.detail-card{
+  max-height:calc(100vh - 106px);
+  overflow:auto;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(155,108,255,.28) transparent;
+}
+.detail-card::-webkit-scrollbar{width:8px}
+.detail-card::-webkit-scrollbar-track{background:transparent}
+.detail-card::-webkit-scrollbar-thumb{
+  background:rgba(155,108,255,.22);
+  border-radius:999px;
+}
+.detail-identity{
+  position:sticky;
+  top:0;
+  z-index:8;
+  margin:-2px -2px 0;
+  padding:2px 2px 10px;
+  background:
+    linear-gradient(180deg,rgba(6,8,13,.98) 0%,rgba(6,8,13,.94) 78%,rgba(6,8,13,0) 100%);
+  backdrop-filter:blur(14px);
+}
+.detail-close{
+  position:sticky;
+  top:8px;
+  z-index:12;
+}
+.project-media[data-media-presentation="landscape"] img{
+  object-fit:contain;
+  background:#030407;
+}
+.project-media[data-media-presentation="landscape"] .project-media-frame{
+  background:
+    radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--family) 10%,transparent),transparent 58%),
+    #030407;
+}

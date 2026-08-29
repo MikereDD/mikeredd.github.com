@@ -1,5 +1,5 @@
-TYPEZER∅ System — Pass 8.2 Overlay
-NATIVE BOT AVATARS
+TYPEZER∅ System — Pass 8.4 Overlay
+FINAL NATIVE MEDIA SWEEP
 
 Copy contents over:
 G:\Forgejo\mikeredd.github.com
@@ -9,24 +9,19 @@ redesign/typezero-system
 
 Replaces:
 - index.html
-- assets/site.css
 - assets/site.js
 
 Adds verified native media for:
-- Kokabiel
-- Raziel
-- Gabriel
-- Sandalphon
-- Selaphiel
-- Zaphkiel
+- Parallax Studio -> src/ParallaxStudio.App/Assets/parallax-studio-icon-256.png
+- Mnemosyne -> assets/mnemosyne-avatar.png
+- Music Library Repair -> assets/Music-Library-Repair-logo.png
 
-Each bot now uses its repository avatar from assets/<bot>-avatar.png.
-Avatar media receives a circular presentation treatment suited to the
-Automation family rather than being stretched like an application screenshot.
+Release Standards intentionally remains on the generated Typezer∅ identity
+panel because no project image has been provided/verified yet.
 
-Existing media:
-- Resound continues using its real premium interface screenshot.
-- Apps/tools without approved screenshots keep the Typezer∅ generated identity.
-- Future screenshots can be added to PROJECT_MEDIA without redesigning the inspector.
+Media priority remains:
+1. Screenshot/mockup
+2. Avatar/icon/logo
+3. Generated Typezer∅ fallback
 
-Cache version: v82.
+Cache version: v84.

@@ -68,6 +68,76 @@
       alt:'Resound premium interface design',
       presentation:'landscape'
     },
+    cadence:{
+      src:'https://raw.githubusercontent.com/MikereDD/Cadence-Studio/main/docs/images/cadence-library.png',
+      href:'https://github.com/MikereDD/Cadence-Studio/blob/main/docs/images/cadence-library.png',
+      label:'INTERFACE PREVIEW',
+      alt:'Cadence Studio library and Now Playing workspace',
+      presentation:'landscape'
+    },
+    couchlink:{
+      src:'https://raw.githubusercontent.com/MikereDD/CouchLink/main/docs/screenshots/windows-host-audio-output.png',
+      href:'https://github.com/MikereDD/CouchLink/blob/main/docs/screenshots/windows-host-audio-output.png',
+      label:'INTERFACE PREVIEW',
+      alt:'CouchLink Windows Host and Audio Output',
+      presentation:'landscape'
+    },
+    atomicclock:{
+      src:'https://raw.githubusercontent.com/MikereDD/AtomicClock/main/docs/images/widget-themes.png',
+      href:'https://github.com/MikereDD/AtomicClock/blob/main/docs/images/widget-themes.png',
+      label:'WIDGET PREVIEW',
+      alt:'Atomic Clock widget themes',
+      presentation:'landscape'
+    },
+    watch:{
+      src:'https://raw.githubusercontent.com/MikereDD/Pixel-Watch-Themes/main/assets/steampunk-reference.png',
+      href:'https://github.com/MikereDD/Pixel-Watch-Themes/blob/main/assets/steampunk-reference.png',
+      label:'THEME PREVIEW',
+      alt:'Pixel Watch Themes Steampunk reference',
+      presentation:'landscape'
+    },
+    sariel:{
+      src:'https://raw.githubusercontent.com/MikereDD/Sariel/main/artwork/icon.png',
+      href:'https://github.com/MikereDD/Sariel/blob/main/artwork/icon.png',
+      label:'PROJECT AVATAR',
+      alt:'Sariel project icon',
+      presentation:'avatar'
+    },
+    seraph:{
+      src:'https://raw.githubusercontent.com/MikereDD/Seraph/main/docs/icon.png',
+      href:'https://github.com/MikereDD/Seraph/blob/main/docs/icon.png',
+      label:'PROJECT AVATAR',
+      alt:'Seraph project icon',
+      presentation:'avatar'
+    },
+    siphon:{
+      src:'https://raw.githubusercontent.com/MikereDD/Siphon/main/docs/assets/branding/siphon-icon.png',
+      href:'https://github.com/MikereDD/Siphon/blob/main/docs/assets/branding/siphon-icon.png',
+      label:'PROJECT AVATAR',
+      alt:'Siphon project icon',
+      presentation:'avatar'
+    },
+    parallax:{
+      src:'https://raw.githubusercontent.com/MikereDD/Parallax-Studio/main/src/ParallaxStudio.App/Assets/parallax-studio-icon-256.png',
+      href:'https://github.com/MikereDD/Parallax-Studio/blob/main/src/ParallaxStudio.App/Assets/parallax-studio-icon-256.png',
+      label:'PROJECT AVATAR',
+      alt:'Parallax Studio project icon',
+      presentation:'avatar'
+    },
+    mnemosyne:{
+      src:'https://raw.githubusercontent.com/MikereDD/Mnemosyne/main/assets/mnemosyne-avatar.png',
+      href:'https://github.com/MikereDD/Mnemosyne/blob/main/assets/mnemosyne-avatar.png',
+      label:'PROJECT AVATAR',
+      alt:'Mnemosyne project avatar',
+      presentation:'avatar'
+    },
+    musicrepair:{
+      src:'https://raw.githubusercontent.com/MikereDD/Music-Library-Repair/master/assets/Music-Library-Repair-logo.png',
+      href:'https://github.com/MikereDD/Music-Library-Repair/blob/master/assets/Music-Library-Repair-logo.png',
+      label:'PROJECT LOGO',
+      alt:'Music Library Repair project logo',
+      presentation:'avatar'
+    },
     kokabiel:{
       src:'https://raw.githubusercontent.com/MikereDD/Kokabiel-Bot/main/assets/kokabiel-avatar.png',
       href:'https://github.com/MikereDD/Kokabiel-Bot/blob/main/assets/kokabiel-avatar.png',
