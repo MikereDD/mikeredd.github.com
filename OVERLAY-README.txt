@@ -1,5 +1,4 @@
-TYPEZER∅ System — Pass 5 Overlay
-INTERACTIVE HISTORY / SIGNAL / INSPECTION
+TYPEZER∅ System — Pass 7.1 Corrective Overlay
 
 Copy contents over:
 G:\Forgejo\mikeredd.github.com
@@ -7,28 +6,24 @@ G:\Forgejo\mikeredd.github.com
 Branch:
 redesign/typezero-system
 
-Replaces:
+Replaces only:
 - index.html
-- assets/site.css
 - assets/site.js
 
-Pass 5:
-- Lower Signal feed becomes interactive.
-- Hover/focus a recent project -> the graph temporarily isolates that system.
-- Ecosystem History becomes an interactive project timeline.
-- Hover/focus a timeline event -> graph echoes the project and family.
-- Clicking a Signal or History event opens the project inspector.
-- Full History lane points gain the same cross-link behavior.
-- Inspector relationship types now explain WHY the project is connected.
-- Graph emphasis clears cleanly when hover/focus ends.
-- Pass 4 relationship semantics and core family physics remain intact.
-- Reduced-motion behavior preserved.
-- Cache version bumped to v50.
+Fixes:
+- Esc now clears lingering keyboard-focus outlines when exiting Observe.
+- Esc preserves the selected project when Observe was entered with a project selected.
+- [ and ] now use physical BracketLeft / BracketRight key codes.
+- [ and ] work even when the inspector is closed:
+    ] selects the first project in project order and continues forward.
+    [ selects the last project in project order and continues backward.
+- Existing deep links and browser Back/Forward remain intact.
+- Cache version bumped to v71.
 
-Recommended test:
-1. Hover each lower Signal item.
-2. Hover several timeline dots.
-3. Click one timeline dot and confirm inspector opens.
-4. Open History view and hover/click lane points.
-5. Select Release Standards, then hover lower timeline events.
-6. Keyboard-tab through Signal and History controls.
+Retest:
+1. Select Resound.
+2. Enter Observe.
+3. Press Esc — Resound inspector should return if it was selected before Observe.
+4. Press ] several times.
+5. Press [ several times.
+6. Close inspector with Esc, then press ] again — a project should open.

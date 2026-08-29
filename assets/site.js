@@ -73,7 +73,7 @@
     kokabiel:[87,40],raziel:[90,49],gabriel:[90,58],sandalphon:[87,67],selaphiel:[82,75],zaphkiel:[75,81],
     musicrepair:[39,86],mnemosyne:[52,89],release:[65,86]
   };
-  const familyLabels = {studio:[51,10],android:[15,27],wear:[84,20],automation:[90,35],engineering:[52,78]};
+  const familyLabels = {studio:[51,10],android:[10.5,23.5],wear:[84,20],automation:[90,35],engineering:[52,78]};
 
   const app = document.querySelector('.app-shell');
   const nodesHost = document.getElementById('nodes');
@@ -95,6 +95,7 @@
   let offsetX = 0, offsetY = 0;
   let dragging = false, dragX = 0, dragY = 0;
   let commandSelection = 0;
+  let routeLock = false;
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   app.classList.add(reducedMotion ? 'motion-off' : 'motion-on');
 
@@ -183,6 +184,7 @@
     updateRelationshipFocus();
     detail.innerHTML='<div class="detail-empty"><span class="detail-glyph">∅</span><p>SELECT A SYSTEM</p><h2>Explore the graph.</h2><span>Choose any project node to inspect its role, technology, relationships, activity, and repository.</span></div>';
     statusMessage.textContent='SYSTEM READY · select a node or press / to search';
+    syncRoute({view:'system',projectId:null});
   }
 
   function selectProject(id){
@@ -211,6 +213,11 @@
       <div class="detail-identity"><div class="detail-icon" style="--family:${familyColor(p)}">${p.glyph}</div><div class="detail-title"><div class="detail-overline">${FAMILY[p.family].label}</div><h2>${p.name}</h2><small>${roles[p.id] || p.purpose}</small><span class="activity-pill">${activity?'● '+formatAgo(activity):'● repository'}</span></div></div>
       <div class="detail-meta"><div class="meta-row"><span>Platform</span><span>${p.platform}</span></div><div class="meta-row"><span>Language</span><span>${data?.language||p.language}</span></div><div class="meta-row"><span>Stack</span><span>${p.tech}</span></div><div class="meta-row"><span>Family</span><span>${FAMILY[p.family].label}</span></div></div>
       <p class="detail-description">${data?.description || p.description}</p>
+      <div class="project-spotlight" style="--family:${familyColor(p)}">
+        <span class="spotlight-glyph">${p.glyph}</span>
+        <div><b>${roles[p.id] || p.purpose}</b><small>${p.platform} · ${data?.language||p.language}</small></div>
+        <i aria-hidden="true"></i>
+      </div>
       <div class="project-fingerprint" aria-label="Project fingerprint">
         <div class="fingerprint-head"><span>PROJECT FINGERPRINT</span><small>${roles[p.id] || p.purpose}</small></div>
         <div class="fingerprint-bars">
@@ -220,6 +227,11 @@
         </div>
       </div>
       <div class="detail-actions"><a href="${repoUrl(p)}" target="_blank" rel="noopener noreferrer">OPEN REPOSITORY ↗</a><a href="${repoUrl(p)}/releases" target="_blank" rel="noopener noreferrer">RELEASES</a></div>
+      <div class="detail-secondary-actions">
+        <button type="button" data-project-nav="-1">← PREVIOUS</button>
+        <button type="button" data-copy-link>SHARE LINK</button>
+        <button type="button" data-project-nav="1">NEXT →</button>
+      </div>
       ${relationKinds.length?`<div class="relation-types"><h3>RELATIONSHIP TYPES</h3><div>${relationKinds.map(type=>`<span style="--relation:${RELATION[type].color}"><i></i>${RELATION[type].label}</span>`).join('')}</div><p class="relation-explain">${relationKinds.map(type=>{
         const copy={
           workflow:'Participates in a direct working sequence with connected tools.',
@@ -234,10 +246,42 @@
     </div>`;
     detail.querySelector('.detail-close').addEventListener('click',closeDetail);
     detail.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>selectProject(b.dataset.open)));
+    detail.querySelectorAll('[data-project-nav]').forEach(b=>b.addEventListener('click',()=>{
+      const next=adjacentProject(p.id,Number(b.dataset.projectNav));
+      if(next)selectProject(next.id);
+    }));
+    detail.querySelector('[data-copy-link]')?.addEventListener('click',()=>copyProjectLink(p));
     statusMessage.textContent=`INSPECTING ${p.name.toUpperCase()} · ${p.platform.toUpperCase()}`;
+    syncRoute({view:'system',projectId:p.id});
     if(innerWidth<900) detail.scrollIntoView({behavior:reducedMotion?'auto':'smooth',block:'start'});
   }
 
+
+
+  function projectOrder(){
+    return [...projects].sort((a,b)=>{
+      const fa=Object.keys(FAMILY).indexOf(a.family), fb=Object.keys(FAMILY).indexOf(b.family);
+      return fa-fb || a.name.localeCompare(b.name);
+    });
+  }
+
+  function adjacentProject(id,delta){
+    const ordered=projectOrder();
+    const i=ordered.findIndex(p=>p.id===id);
+    if(i<0)return null;
+    return ordered[(i+delta+ordered.length)%ordered.length];
+  }
+
+  async function copyProjectLink(p){
+    const url=new URL(location.href);
+    url.hash=`system/${p.id}`;
+    try{
+      await navigator.clipboard.writeText(url.toString());
+      statusMessage.textContent=`LINK COPIED · ${p.name.toUpperCase()}`;
+    }catch{
+      statusMessage.textContent=`SHARE LINK · ${url.toString()}`;
+    }
+  }
 
   function pulseCore(color){
     if(reducedMotion || app.classList.contains('motion-off')) return;
@@ -323,6 +367,40 @@
     });
   }
 
+
+  const VALID_VIEWS = new Set(['system','signal','history','relationships','index']);
+
+  function routeHash(view=app.dataset.view || 'system', projectId=null){
+    const base=view==='relationships'?'relations':view;
+    return `#${base}${view==='system' && projectId?`/${projectId}`:''}`;
+  }
+
+  function syncRoute({replace=false,view=app.dataset.view || 'system',projectId=null}={}){
+    if(routeLock)return;
+    const hash=routeHash(view,projectId ?? (view==='system'?selected?.id:null));
+    if(location.hash===hash)return;
+    history[replace?'replaceState':'pushState']({view,projectId:projectId ?? (view==='system'?selected?.id:null)},'',hash);
+  }
+
+  function parseRoute(){
+    const raw=(location.hash||'#system').slice(1);
+    const [first,projectId]=raw.split('/');
+    const view=first==='relations'?'relationships':(VALID_VIEWS.has(first)?first:'system');
+    return {view,projectId:view==='system' && projectById(projectId)?projectId:null};
+  }
+
+  function applyRoute({replace=false}={}){
+    const {view,projectId}=parseRoute();
+    routeLock=true;
+    showView(view);
+    if(view==='system'){
+      if(projectId) selectProject(projectId);
+      else if(selected) closeDetail();
+    }
+    routeLock=false;
+    if(replace) syncRoute({replace:true,view,projectId});
+  }
+
   function renderStats(){
     familyStats.innerHTML='';
     Object.entries(FAMILY).forEach(([key,f])=>{const count=projects.filter(p=>p.family===key).length; const row=document.createElement('div');row.className='family-stat';row.style.setProperty('--family',f.color);row.innerHTML=`<i></i><span>${f.label}</span><b>${count}</b>`;familyStats.append(row)});
@@ -333,7 +411,8 @@
 
   function renderSignals(){
     const sorted=[...projects].sort((a,b)=>new Date(github.get(b.repo.toLowerCase())?.pushed_at||0)-new Date(github.get(a.repo.toLowerCase())?.pushed_at||0)).slice(0,6);
-    signalList.innerHTML=sorted.map(p=>{const d=github.get(p.repo.toLowerCase());return `<div class="signal-item" style="--family:${familyColor(p)}"><i></i><span>${p.name}</span><small>${formatAgo(d?.pushed_at)}</small>${spark(p)}</div>`}).join('');
+    signalList.innerHTML=sorted.map(p=>{const d=github.get(p.repo.toLowerCase());return `<button type="button" class="signal-item signal-button" data-peek-project="${p.id}" data-peek-source="signal" style="--family:${familyColor(p)}"><i></i><span>${p.name}</span><small>${formatAgo(d?.pushed_at)}</small>${spark(p)}</button>`}).join('');
+    bindProjectPeek(signalList);
   }
 
   function projectCreatedAt(p){
@@ -363,17 +442,34 @@
       el.textContent=d.toLocaleDateString(undefined,{month:'short',year:'2-digit'});
       timeline.append(el);
     }
-    const sorted=[...projects].sort((a,b)=>projectCreatedAt(a)-projectCreatedAt(b));
-    sorted.forEach((p,i)=>{
+
+    const items=[...projects].sort((a,b)=>projectCreatedAt(a)-projectCreatedAt(b)).map(p=>{
       const when=projectCreatedAt(p);
-      const x=38+Math.max(0,Math.min(1,(when-min)/(max-min)))*width;
+      return {p,when,x:38+Math.max(0,Math.min(1,(when-min)/(max-min)))*width};
+    });
+
+    const lanes=[];
+    items.forEach(item=>{
+      let lane=lanes.findIndex(lastX=>Math.abs(item.x-lastX)>34);
+      if(lane<0){ lane=lanes.length; lanes.push(item.x); }
+      else lanes[lane]=item.x;
+      item.lane=Math.min(lane,5);
+    });
+
+    items.forEach(({p,when,x,lane})=>{
       const dot=document.createElement('button');
-      dot.className='timeline-dot';
+      dot.type='button';
+      dot.className='timeline-dot smart-timeline-dot';
       dot.style.left=`${x}px`;
-      dot.style.bottom=`${30+(i%4)*18}px`;
+      dot.style.bottom=`${28+lane*17}px`;
       dot.style.setProperty('--family',familyColor(p));
       dot.dataset.label=`${p.name} · ${new Date(when).toLocaleDateString(undefined,{month:'short',year:'numeric'})}`;
-      dot.title=dot.dataset.label;
+      dot.dataset.peeking=p.id;
+      dot.setAttribute('aria-label',dot.dataset.label);
+      dot.addEventListener('mouseenter',()=>emphasizeProject(p.id,'history'));
+      dot.addEventListener('mouseleave',clearProjectEmphasis);
+      dot.addEventListener('focus',()=>emphasizeProject(p.id,'history'));
+      dot.addEventListener('blur',clearProjectEmphasis);
       dot.addEventListener('click',()=>selectProject(p.id));
       timeline.append(dot);
     });
@@ -406,6 +502,7 @@
     if(view==='system'){alternate.hidden=true;document.querySelector('.system-stage').hidden=false;detail.hidden=false;document.querySelector('.lower-grid').hidden=false}
     else{document.querySelector('.system-stage').hidden=true;detail.hidden=true;document.querySelector('.lower-grid').hidden=true;alternate.hidden=false;renderAlternate(view)}
     document.querySelectorAll('[data-view-target]').forEach(b=>b.classList.toggle('is-active',b.dataset.viewTarget===view));app.dataset.view=view;statusMessage.textContent=`VIEW ${view.toUpperCase()} · TYPEZER∅ SYSTEM`;
+    syncRoute({view,projectId:view==='system'?selected?.id:null});
   }
 
   function renderAlternate(view){
@@ -420,30 +517,99 @@
       const rawMin=Math.min(...created),rawMax=Math.max(...created),span=Math.max(1000*60*60*24*30,rawMax-rawMin);
       const pad=Math.max(1000*60*60*24*14,span*.08),min=rawMin-pad,max=rawMax+pad;
       const ticks=Array.from({length:5},(_,i)=>{const t=min+(max-min)*(i/4),d=new Date(t);return `<span class="history-tick" style="left:${i*25}%">${d.toLocaleDateString(undefined,{month:'short',year:'2-digit'})}</span>`}).join('');
-      alternate.innerHTML=head('Evolution over time.','Repository creation through current development.')+`<div class="history-scale">${ticks}</div><div class="history-lanes">${Object.entries(FAMILY).map(([key,f])=>{const arr=projects.filter(p=>p.family===key);const points=arr.map((p,i)=>{const d=github.get(p.repo.toLowerCase());const start=d?.created_at?new Date(d.created_at).getTime():created[projects.indexOf(p)];const pct=Math.max(0,Math.min(100,(start-min)/(max-min)*100));return `<button class="lane-point" data-open="${p.id}" data-peek-project="${p.id}" data-peek-source="history" title="${p.name}" aria-label="${p.name}" style="left:${pct}%"></button>`}).join('');return `<div class="history-lane" style="--family:${f.color}"><span>${f.label}</span><div class="lane-track"><i class="lane-segment" style="left:0;right:0"></i>${points}</div></div>`}).join('')}</div>`;
+      alternate.innerHTML=head('Evolution over time.','Repository creation through current development.')+`<div class="history-scale">${ticks}</div><div class="history-lanes">${Object.entries(FAMILY).map(([key,f])=>{const arr=projects.filter(p=>p.family===key);const seen=new Map();const points=arr.map((p,i)=>{const d=github.get(p.repo.toLowerCase());const start=d?.created_at?new Date(d.created_at).getTime():created[projects.indexOf(p)];const pct=Math.max(0,Math.min(100,(start-min)/(max-min)*100));const bucket=Math.round(pct*2)/2;const dup=seen.get(bucket)||0;seen.set(bucket,dup+1);const stagger=(dup%5)-2;return `<button class="lane-point" data-open="${p.id}" data-peek-project="${p.id}" data-peek-source="history" aria-label="${p.name}" data-label="${p.name}" style="left:${pct}%;--stagger:${stagger}"></button>`}).join('');return `<div class="history-lane" style="--family:${f.color}"><span>${f.label}</span><div class="lane-track"><i class="lane-segment" style="left:0;right:0"></i>${points}</div></div>`}).join('')}</div>`;
     } else if(view==='relationships'){
       const groups=[['Audio toolchain','Siphon extracts, Seraph identifies and tags, Resound edits and mixes.',['siphon','seraph','resound']],['Studio language','Cadence and Parallax share the Typezer∅ Studio desktop identity.',['cadence','parallax']],['Time lineage','AtomicClock feeds the design language that expands into Wear OS themes.',['atomicclock','watch']],['Release infrastructure','Reusable release and update principles connect application projects.',['release','cadence','parallax','resound','couchlink']],['Automation family','The angel-named Telegram agents form a coordinated bot collection.',['kokabiel','raziel','gabriel','sandalphon','selaphiel','zaphkiel']],['Library systems','Mnemosyne organizes media while Music Library Repair focuses on safe correction and normalization.',['mnemosyne','musicrepair']]];
       alternate.innerHTML=head('Ideas have lineage.','Workflows, shared standards, and project families.')+`<div class="relations-grid">${groups.map(g=>`<article class="relation-card"><h3>${g[0]}</h3><p>${g[1]}</p><div class="relation-flow">${g[2].map((id,i)=>`${i?'<i>→</i>':''}<button data-open="${id}">${projects.find(p=>p.id===id).name}</button>`).join('')}</div></article>`).join('')}</div>`;
     }
-    alternate.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>{showView('system');selectProject(b.dataset.open)}));
+    alternate.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>{routeLock=true;showView('system');routeLock=false;selectProject(b.dataset.open)}));
+    bindProjectPeek(alternate);
   }
 
   document.querySelectorAll('[data-view-target]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.viewTarget)));
-  document.querySelector('.observe-toggle').addEventListener('click',()=>{app.classList.toggle('observe');if(app.classList.contains('observe')){showView('system');statusMessage.textContent='OBSERVE MODE · live topology';}else statusMessage.textContent='SYSTEM READY · select a node or press / to search'});
-  addEventListener('keydown',e=>{if(e.key==='/'&&!commandDialog.open&&document.activeElement.tagName!=='INPUT'){e.preventDefault();openCommand('')}if(e.key==='Escape'&&app.classList.contains('observe'))app.classList.remove('observe')});
-  ecosystem.addEventListener('dblclick',()=>app.classList.toggle('observe'));
+  let observeTimer=null, observeIndex=0;
+  function stopObserveCycle(){ if(observeTimer){clearInterval(observeTimer);observeTimer=null;} }
+  function clearTransientFocus(){
+    const active=document.activeElement;
+    if(active && typeof active.blur==='function' && active!==document.body) active.blur();
+  }
+  function startObserveCycle(){
+    stopObserveCycle();
+    if(reducedMotion || app.classList.contains('motion-off'))return;
+    const ordered=[...projects].sort((a,b)=>new Date(projectActivity(b)||0)-new Date(projectActivity(a)||0));
+    observeTimer=setInterval(()=>{
+      if(!app.classList.contains('observe'))return stopObserveCycle();
+      const p=ordered[observeIndex++%ordered.length];
+      emphasizeProject(p.id,'observe');
+      setTimeout(()=>{if(app.classList.contains('observe'))clearProjectEmphasis()},2200);
+    },4200);
+  }
+  document.querySelector('.observe-toggle').addEventListener('click',()=>{
+    app.classList.toggle('observe');
+    if(app.classList.contains('observe')){
+      routeLock=true;showView('system');routeLock=false;
+      statusMessage.textContent='OBSERVE MODE · live topology';
+      startObserveCycle();
+    }else{
+      stopObserveCycle();clearProjectEmphasis();clearTransientFocus();
+      statusMessage.textContent=selected?`INSPECTING ${selected.name.toUpperCase()} · ${selected.platform.toUpperCase()}`:'SYSTEM READY · select a node or press / to search';
+    }
+  });
+  addEventListener('keydown',e=>{
+    const typing=['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName) || commandDialog.open;
+    if(e.key==='/'&&!commandDialog.open&&!typing){e.preventDefault();openCommand('');return}
+    if(e.key==='Escape'){
+      if(commandDialog.open){commandDialog.close();return}
+      if(app.classList.contains('observe')){app.classList.remove('observe');stopObserveCycle();clearProjectEmphasis();clearTransientFocus();return}
+      if(selected && app.dataset.view==='system'){closeDetail();clearTransientFocus();return}
+    }
+    if(!typing && ['1','2','3','4','5'].includes(e.key)){
+      const views=['system','signal','history','relationships','index'];
+      showView(views[Number(e.key)-1]);
+    }
+    if(!typing && app.dataset.view==='system' && (e.code==='BracketLeft' || e.code==='BracketRight')){
+      e.preventDefault();
+      const ordered=projectOrder();
+      const delta=e.code==='BracketLeft'?-1:1;
+      const base=selected?.id || (delta<0?ordered[0]?.id:ordered.at(-1)?.id);
+      const next=base?adjacentProject(base,delta):ordered[0];
+      if(next)selectProject(next.id);
+      return;
+    }
+  });
+  ecosystem.addEventListener('dblclick',()=>{
+    app.classList.toggle('observe');
+    if(app.classList.contains('observe'))startObserveCycle();
+    else{stopObserveCycle();clearProjectEmphasis();clearTransientFocus();}
+  });
 
-  function filteredProjects(q){q=q.trim().toLowerCase();if(!q)return projects;return projects.filter(p=>[p.name,p.repo,p.platform,p.language,p.tech,p.purpose,p.keywords,FAMILY[p.family].label].join(' ').toLowerCase().includes(q))}
+  function filteredProjects(q){
+    q=q.trim().toLowerCase();
+    if(!q)return projects;
+    const tokens=q.split(/\s+/).filter(Boolean);
+    const relationWords=new Set(['workflow','lineage','infrastructure','family','bridge','affinity']);
+    return projects.map(p=>{
+      const relTypes=[...new Set(p.relations.map(id=>{const other=projectById(id);return other?relationType(p,other):'affinity'}))];
+      const hay=[p.name,p.repo,p.platform,p.language,p.tech,p.purpose,p.keywords,FAMILY[p.family].label,...relTypes,...relTypes.map(t=>RELATION[t]?.label||'')].join(' ').toLowerCase();
+      const useful=tokens.filter(t=>t!=='relation'&&t!=='relations');
+      const matched=useful.every(t=>hay.includes(t));
+      const score=useful.reduce((n,t)=>n+(p.name.toLowerCase().includes(t)?8:0)+(FAMILY[p.family].label.toLowerCase().includes(t)?4:0)+(relationWords.has(t)&&relTypes.includes(t)?6:0)+(hay.includes(t)?1:0),0);
+      return {p,matched,score};
+    }).filter(x=>x.matched).sort((a,b)=>b.score-a.score||a.p.name.localeCompare(b.p.name)).map(x=>x.p);
+  }
   function renderCommand(q=''){
     const rows=filteredProjects(q);commandSelection=Math.min(commandSelection,Math.max(0,rows.length-1));
     commandResults.innerHTML=rows.map((p,i)=>`<button type="button" class="command-result ${i===commandSelection?'is-selected':''}" data-open="${p.id}" style="--family:${familyColor(p)}"><b>${p.name}</b><small>${p.platform}</small><span>${p.purpose}</span></button>`).join('')||'<div class="command-foot">No matching system.</div>';
-    commandResults.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>{commandDialog.close();showView('system');selectProject(b.dataset.open)}));
+    commandResults.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>{commandDialog.close();routeLock=true;showView('system');routeLock=false;selectProject(b.dataset.open)}));
   }
   function openCommand(q=''){commandSelection=0;commandInput.value=q;renderCommand(q);commandDialog.showModal();setTimeout(()=>commandInput.focus(),20)}
   document.getElementById('open-command').addEventListener('click',()=>openCommand(''));
   commandInput.addEventListener('input',()=>{commandSelection=0;renderCommand(commandInput.value)});
-  commandInput.addEventListener('keydown',e=>{const rows=filteredProjects(commandInput.value);if(e.key==='ArrowDown'){e.preventDefault();commandSelection=Math.min(rows.length-1,commandSelection+1);renderCommand(commandInput.value)}else if(e.key==='ArrowUp'){e.preventDefault();commandSelection=Math.max(0,commandSelection-1);renderCommand(commandInput.value)}else if(e.key==='Enter'&&rows[commandSelection]){e.preventDefault();commandDialog.close();showView('system');selectProject(rows[commandSelection].id)}});
+  commandInput.addEventListener('keydown',e=>{const rows=filteredProjects(commandInput.value);if(e.key==='ArrowDown'){e.preventDefault();commandSelection=Math.min(rows.length-1,commandSelection+1);renderCommand(commandInput.value)}else if(e.key==='ArrowUp'){e.preventDefault();commandSelection=Math.max(0,commandSelection-1);renderCommand(commandInput.value)}else if(e.key==='Enter'&&rows[commandSelection]){e.preventDefault();commandDialog.close();routeLock=true;showView('system');routeLock=false;selectProject(rows[commandSelection].id)}});
 
   addEventListener('resize',()=>{clearTimeout(window.__tzTimelineResize);window.__tzTimelineResize=setTimeout(renderTimeline,120)});
-  renderMap();refreshActivityState();renderStats();renderSignals();renderTimeline();loadGitHub();
+  addEventListener('popstate',()=>applyRoute());
+  renderMap();refreshActivityState();renderStats();renderSignals();renderTimeline();
+  applyRoute({replace:true});
+  loadGitHub();
 })();

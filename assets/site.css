@@ -315,3 +315,136 @@
 @media(prefers-reduced-motion:reduce){
   .project-node.is-peek .node-orb,.mini-timeline-event{transition:none!important}
 }
+
+
+/* === Pass 6: navigation intelligence / timeline clustering === */
+.smart-timeline-dot{z-index:2}
+.smart-timeline-dot::after,
+.lane-point::after{
+  content:attr(data-label);
+  position:absolute;
+  left:50%;
+  bottom:calc(100% + 9px);
+  transform:translateX(-50%) translateY(2px);
+  opacity:0;
+  pointer-events:none;
+  white-space:nowrap;
+  padding:5px 7px;
+  border:1px solid color-mix(in srgb,var(--family) 32%,var(--line));
+  border-radius:5px;
+  background:rgba(5,7,12,.96);
+  color:#dfe3ef;
+  font:500 .49rem/1 var(--mono);
+  box-shadow:0 8px 24px rgba(0,0,0,.32);
+  transition:opacity .12s ease,transform .12s ease;
+}
+.smart-timeline-dot:hover::after,
+.smart-timeline-dot:focus-visible::after,
+.lane-point:hover::after,
+.lane-point:focus-visible::after{
+  opacity:1;transform:translateX(-50%) translateY(0)
+}
+.smart-timeline-dot:nth-of-type(3n)::after{transform:translateX(-72%) translateY(2px)}
+.smart-timeline-dot:nth-of-type(3n+1)::after{transform:translateX(-28%) translateY(2px)}
+.smart-timeline-dot:nth-of-type(3n):hover::after,
+.smart-timeline-dot:nth-of-type(3n):focus-visible::after{transform:translateX(-72%) translateY(0)}
+.smart-timeline-dot:nth-of-type(3n+1):hover::after,
+.smart-timeline-dot:nth-of-type(3n+1):focus-visible::after{transform:translateX(-28%) translateY(0)}
+
+.lane-point{transform:translate(-50%,calc(-50% + (var(--stagger,0) * 5px)))}
+.lane-point:hover{transform:translate(-50%,calc(-50% + (var(--stagger,0) * 5px))) scale(1.55)}
+
+.command-result.is-selected{box-shadow:inset 3px 0 0 var(--family),0 0 24px color-mix(in srgb,var(--family) 10%,transparent)}
+.command-result small::before{content:"↳ ";color:#626a7b}
+
+body::after{
+  content:"1 SYSTEM   2 SIGNAL   3 HISTORY   4 RELATIONS   5 INDEX   / SEARCH   [ ] PROJECT   ESC BACK";
+  position:fixed;left:96px;bottom:8px;z-index:60;
+  color:#363d4b;font:500 .45rem/1 var(--mono);letter-spacing:.08em;
+  pointer-events:none;opacity:.72
+}
+@media(max-width:1000px){body::after{display:none}}
+@media(prefers-reduced-motion:reduce){
+  .smart-timeline-dot::after,.lane-point::after{transition:none!important}
+}
+
+
+/* === Pass 7: showcase / presentation polish === */
+.project-spotlight{
+  position:relative;
+  display:grid;
+  grid-template-columns:46px 1fr;
+  align-items:center;
+  gap:10px;
+  margin:12px 0 2px;
+  padding:12px;
+  overflow:hidden;
+  border:1px solid color-mix(in srgb,var(--family) 24%,var(--line));
+  border-radius:8px;
+  background:
+    radial-gradient(circle at 12% 50%,color-mix(in srgb,var(--family) 18%,transparent),transparent 42%),
+    rgba(255,255,255,.012);
+}
+.project-spotlight>i{
+  position:absolute;inset:auto -20% -35% 30%;height:100%;
+  border-top:1px solid color-mix(in srgb,var(--family) 30%,transparent);
+  transform:rotate(-7deg);
+  opacity:.6
+}
+.spotlight-glyph{
+  width:42px;height:42px;display:grid;place-items:center;border-radius:50%;
+  border:1px solid color-mix(in srgb,var(--family) 65%,#fff);
+  color:#fff;font-size:1.2rem;
+  box-shadow:0 0 20px color-mix(in srgb,var(--family) 28%,transparent);
+}
+.project-spotlight b{display:block;font:600 .67rem/1.25 var(--mono);letter-spacing:.07em;color:#e7e9f2}
+.project-spotlight small{display:block;margin-top:5px;color:#697183;font:500 .52rem/1.2 var(--mono)}
+
+.detail-secondary-actions{
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:8px 0 2px
+}
+.detail-secondary-actions button{
+  min-height:32px;border:1px solid var(--line);border-radius:5px;background:rgba(255,255,255,.012);
+  color:#777f90;font:600 .48rem/1 var(--mono);letter-spacing:.07em;cursor:pointer
+}
+.detail-secondary-actions button:hover,.detail-secondary-actions button:focus-visible{
+  color:#fff;border-color:color-mix(in srgb,var(--focus-family) 35%,var(--line));
+  background:color-mix(in srgb,var(--focus-family) 7%,transparent)
+}
+
+.app-shell.observe .topbar,
+.app-shell.observe .rail,
+.app-shell.observe .lower-grid,
+.app-shell.observe .detail-panel,
+.app-shell.observe .stage-heading,
+.app-shell.observe .map-toolbar,
+.app-shell.observe .footer{
+  opacity:0;pointer-events:none
+}
+.app-shell.observe .workspace{grid-template-columns:1fr}
+.app-shell.observe .system-stage{
+  position:fixed;inset:0;z-index:70;border:0;border-radius:0;background:#020306
+}
+.app-shell.observe .ecosystem{height:100vh;min-height:100vh}
+.app-shell.observe .rings{opacity:.9}
+.app-shell.observe #core{filter:brightness(1.12)}
+.app-shell.observe .project-node{transition:opacity .5s ease,filter .5s ease}
+.app-shell.observe .project-node:not(.is-peek){opacity:.38}
+.app-shell.observe .project-node.is-peek{opacity:1!important}
+.app-shell.observe::after{
+  content:"TYPEZER∅ // OBSERVE";
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:90;
+  color:#4f5667;font:600 .5rem/1 var(--mono);letter-spacing:.22em;pointer-events:none
+}
+.app-shell.observe::before{
+  content:"MOVE · CLICK · ESC TO EXIT";
+  position:fixed;right:28px;bottom:26px;z-index:90;
+  color:#313745;font:500 .43rem/1 var(--mono);letter-spacing:.12em;pointer-events:none
+}
+
+@media(max-width:900px){
+  .detail-secondary-actions{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+  .app-shell.observe .project-node{transition:none!important}
+}
