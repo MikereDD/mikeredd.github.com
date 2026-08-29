@@ -30,14 +30,29 @@
     {id:'zaphkiel',repo:'Zaphkiel-Bot',name:'Zaphkiel',family:'automation',glyph:'✶',platform:'Telegram',language:'Python',tech:'Bot API',purpose:'Telegram automation agent.',description:'Part of the Typezer∅ Telegram automation family.',relations:['kokabiel','raziel','gabriel','sandalphon','selaphiel'],keywords:'telegram bot automation'}
   ];
 
-  const positions = {
-    cadence:[45,18],parallax:[58,19],
-    sariel:[21,31],seraph:[18,40],siphon:[18,49],resound:[19,58],couchlink:[21,67],atomicclock:[25,75],
-    watch:[79,30],
-    kokabiel:[84,43],raziel:[86,51],gabriel:[86,59],sandalphon:[84,67],selaphiel:[80,74],zaphkiel:[75,79],
-    musicrepair:[41,83],mnemosyne:[52,86],release:[63,83]
+  const roles = {
+    cadence:'MUSIC SYSTEM', parallax:'VIDEO SYSTEM', sariel:'CLOUD MEDIA', seraph:'METADATA',
+    siphon:'EXTRACTION', resound:'AUDIO EDITING', couchlink:'DEVICE BRIDGE', atomicclock:'PRECISION TIME',
+    watch:'WEAR OS DESIGN', musicrepair:'LIBRARY REPAIR', mnemosyne:'MEDIA ORGANIZER', release:'RELEASE INFRA',
+    kokabiel:'MEDIA AGENT', raziel:'AUTOMATION AGENT', gabriel:'AUTOMATION AGENT', sandalphon:'AUTOMATION AGENT',
+    selaphiel:'AUTOMATION AGENT', zaphkiel:'AUTOMATION AGENT'
   };
-  const familyLabels = {studio:[52,8],android:[15,22],wear:[82,20],automation:[88,34],engineering:[52,72]};
+
+  const fallbackCreated = {
+    cadence:'2026-07-01', parallax:'2026-07-10', sariel:'2026-07-24', seraph:'2026-07-27', siphon:'2026-07-27',
+    resound:'2026-07-27', couchlink:'2026-06-20', atomicclock:'2026-06-28', watch:'2026-08-12', musicrepair:'2026-08-23',
+    mnemosyne:'2026-08-01', release:'2026-07-27', kokabiel:'2026-07-15', raziel:'2026-07-15', gabriel:'2026-07-15',
+    sandalphon:'2026-07-15', selaphiel:'2026-07-15', zaphkiel:'2026-08-18'
+  };
+
+  const positions = {
+    cadence:[43,17],parallax:[59,18],
+    sariel:[18,29],seraph:[14,39],siphon:[14,49],resound:[15,59],couchlink:[18,69],atomicclock:[25,78],
+    watch:[82,27],
+    kokabiel:[87,40],raziel:[90,49],gabriel:[90,58],sandalphon:[87,67],selaphiel:[82,75],zaphkiel:[75,81],
+    musicrepair:[39,86],mnemosyne:[52,89],release:[65,86]
+  };
+  const familyLabels = {studio:[51,7],android:[13,20],wear:[84,17],automation:[91,31],engineering:[52,75]};
 
   const app = document.querySelector('.app-shell');
   const nodesHost = document.getElementById('nodes');
@@ -81,7 +96,7 @@
     });
     projects.forEach(p=>{
       const [x,y]=positions[p.id]; const node=document.createElement('button'); node.className='project-node';node.dataset.project=p.id;node.style.left=`${x}%`;node.style.top=`${y}%`;node.style.setProperty('--family',familyColor(p));
-      node.innerHTML=`<span class="node-body"><span class="node-orb">${p.glyph}</span><span class="node-copy"><strong>${p.name}</strong><small>${p.purpose}</small></span></span>`;
+      node.innerHTML=`<span class="node-body"><span class="node-orb">${p.glyph}</span><span class="node-copy"><strong>${p.name}</strong><small>${roles[p.id] || p.purpose}</small></span></span>`;
       node.addEventListener('click',e=>{e.stopPropagation();selectProject(p.id)});nodesHost.append(node);
       lineToCore(p);
     });
@@ -91,7 +106,7 @@
   function lineToCore(p){
     const [x,y]=positions[p.id], cx=50, cy=53;
     const line=document.createElementNS('http://www.w3.org/2000/svg','line');
-    line.setAttribute('x1',`${cx}%`);line.setAttribute('y1',`${cy}%`);line.setAttribute('x2',`${x}%`);line.setAttribute('y2',`${y}%`);line.setAttribute('stroke',familyColor(p));line.setAttribute('stroke-opacity','.24');line.setAttribute('stroke-width','1');line.dataset.family=p.family;svg.append(line);
+    line.setAttribute('x1',`${cx}%`);line.setAttribute('y1',`${cy}%`);line.setAttribute('x2',`${x}%`);line.setAttribute('y2',`${y}%`);line.setAttribute('stroke',familyColor(p));line.setAttribute('stroke-opacity','.16');line.setAttribute('stroke-width','1');line.dataset.family=p.family;line.dataset.coreProject=p.id;line.classList.add('core-line');svg.append(line);
   }
 
   function relationshipLines(){
@@ -100,26 +115,58 @@
       const key=[p.id,id].sort().join('|'); if(unique.has(key))return; unique.add(key);
       const a=positions[p.id], b=positions[id]; if(!a||!b)return;
       const line=document.createElementNS('http://www.w3.org/2000/svg','line');
-      line.setAttribute('x1',`${a[0]}%`);line.setAttribute('y1',`${a[1]}%`);line.setAttribute('x2',`${b[0]}%`);line.setAttribute('y2',`${b[1]}%`);line.setAttribute('stroke','#c3b5ff');line.setAttribute('stroke-opacity','.055');line.setAttribute('stroke-dasharray','2 5');line.setAttribute('stroke-width','.75');line.classList.add('relationship-line');svg.append(line);
+      line.setAttribute('x1',`${a[0]}%`);line.setAttribute('y1',`${a[1]}%`);line.setAttribute('x2',`${b[0]}%`);line.setAttribute('y2',`${b[1]}%`);line.setAttribute('stroke','#c3b5ff');line.setAttribute('stroke-opacity','.11');line.setAttribute('stroke-dasharray','3 6');line.setAttribute('stroke-width','1');line.dataset.a=p.id;line.dataset.b=id;line.classList.add('relationship-line');svg.append(line);
     }));
+  }
+
+  function updateRelationshipFocus(id=null){
+    svg.querySelectorAll('.relationship-line').forEach(line=>{
+      const connected=id && (line.dataset.a===id || line.dataset.b===id);
+      line.classList.toggle('is-connected',Boolean(connected));
+      line.classList.toggle('is-muted',Boolean(id && !connected));
+    });
+    svg.querySelectorAll('.core-line').forEach(line=>{
+      line.classList.toggle('is-connected',Boolean(id && line.dataset.coreProject===id));
+      line.classList.toggle('is-muted',Boolean(id && line.dataset.coreProject!==id));
+    });
+    document.querySelectorAll('.project-node').forEach(node=>{
+      const p=projects.find(x=>x.id===node.dataset.project);
+      const related=id && (node.dataset.project===id || p?.relations.includes(id) || projects.find(x=>x.id===id)?.relations.includes(node.dataset.project));
+      node.classList.toggle('is-related',Boolean(related && node.dataset.project!==id));
+      node.classList.toggle('is-dimmed',Boolean(id && !related && node.dataset.project!==id));
+    });
+  }
+
+  function closeDetail(){
+    selected=null;
+    app.classList.remove('detail-open');
+    document.querySelectorAll('.project-node').forEach(n=>n.classList.remove('is-active','is-related','is-dimmed'));
+    updateRelationshipFocus();
+    detail.innerHTML='<div class="detail-empty"><span class="detail-glyph">∅</span><p>SELECT A SYSTEM</p><h2>Explore the graph.</h2><span>Choose any project node to inspect its role, technology, relationships, activity, and repository.</span></div>';
+    statusMessage.textContent='SYSTEM READY · select a node or press / to search';
   }
 
   function selectProject(id){
     const p=projects.find(x=>x.id===id); if(!p)return; selected=p;
+    app.classList.add('detail-open');
     document.querySelectorAll('.project-node').forEach(n=>n.classList.toggle('is-active',n.dataset.project===id));
+    updateRelationshipFocus(id);
     const data=github.get(p.repo.toLowerCase()); const activity=data?.pushed_at || data?.updated_at;
     const related=p.relations.map(r=>projects.find(x=>x.id===r)).filter(Boolean);
     detail.innerHTML=`<div class="detail-card">
-      <div class="detail-identity"><div class="detail-icon" style="--family:${familyColor(p)}">${p.glyph}</div><div class="detail-title"><div class="detail-overline">${FAMILY[p.family].label}</div><h2>${p.name}</h2><small>${p.purpose}</small><span class="activity-pill">${activity?'● '+formatAgo(activity):'● repository'}</span></div></div>
+      <button class="detail-close" type="button" aria-label="Close project details">×</button>
+      <div class="detail-identity"><div class="detail-icon" style="--family:${familyColor(p)}">${p.glyph}</div><div class="detail-title"><div class="detail-overline">${FAMILY[p.family].label}</div><h2>${p.name}</h2><small>${roles[p.id] || p.purpose}</small><span class="activity-pill">${activity?'● '+formatAgo(activity):'● repository'}</span></div></div>
       <div class="detail-meta"><div class="meta-row"><span>Platform</span><span>${p.platform}</span></div><div class="meta-row"><span>Language</span><span>${data?.language||p.language}</span></div><div class="meta-row"><span>Stack</span><span>${p.tech}</span></div><div class="meta-row"><span>Family</span><span>${FAMILY[p.family].label}</span></div></div>
       <p class="detail-description">${data?.description || p.description}</p>
       <div class="detail-actions"><a href="${repoUrl(p)}" target="_blank" rel="noopener noreferrer">OPEN REPOSITORY ↗</a><a href="${repoUrl(p)}/releases" target="_blank" rel="noopener noreferrer">RELEASES</a></div>
       ${related.length?`<div class="relation-block"><h3>CONNECTED SYSTEMS</h3><div class="relation-list">${related.map(r=>`<button class="relation-chip" data-open="${r.id}">${r.name}</button>`).join('')}</div></div>`:''}
     </div>`;
+    detail.querySelector('.detail-close').addEventListener('click',closeDetail);
     detail.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>selectProject(b.dataset.open)));
     statusMessage.textContent=`INSPECTING ${p.name.toUpperCase()} · ${p.platform.toUpperCase()}`;
     if(innerWidth<900) detail.scrollIntoView({behavior:reducedMotion?'auto':'smooth',block:'start'});
   }
+
 
   function renderStats(){
     familyStats.innerHTML='';
@@ -134,13 +181,49 @@
     signalList.innerHTML=sorted.map(p=>{const d=github.get(p.repo.toLowerCase());return `<div class="signal-item" style="--family:${familyColor(p)}"><i></i><span>${p.name}</span><small>${formatAgo(d?.pushed_at)}</small>${spark(p)}</div>`}).join('');
   }
 
-  function renderTimeline(){
-    const years=[2022,2023,2024,2025,2026]; const min=new Date('2022-01-01').getTime(),max=new Date('2027-01-01').getTime();
-    timeline.innerHTML='<div class="timeline-axis"></div>';
-    const width=timeline.clientWidth-52;
-    years.forEach(y=>{const el=document.createElement('span');el.className='timeline-year';el.style.left=`${46+((new Date(`${y}-01-01`).getTime()-min)/(max-min))*width}px`;el.textContent=y;timeline.append(el)});
-    projects.forEach((p,i)=>{const d=github.get(p.repo.toLowerCase());const when=d?.created_at?new Date(d.created_at).getTime():new Date(`2025-${String((i%12)+1).padStart(2,'0')}-01`).getTime();const x=46+Math.max(0,Math.min(1,(when-min)/(max-min)))*width;const dot=document.createElement('button');dot.className='timeline-dot';dot.style.left=`${x}px`;dot.style.bottom=`${26+(i%4)*17}px`;dot.style.setProperty('--family',familyColor(p));dot.dataset.label=p.name;dot.title=p.name;dot.addEventListener('click',()=>selectProject(p.id));timeline.append(dot)});
+  function projectCreatedAt(p){
+    const d=github.get(p.repo.toLowerCase());
+    return new Date(d?.created_at || fallbackCreated[p.id] || '2026-01-01').getTime();
   }
+
+  function timelineBounds(){
+    const values=projects.map(projectCreatedAt).filter(Number.isFinite).sort((a,b)=>a-b);
+    const earliest=values[0] || new Date('2026-01-01').getTime();
+    const latest=Math.max(values.at(-1) || earliest, Date.now());
+    const span=Math.max(120*864e5, latest-earliest);
+    return {min:earliest-span*.08,max:latest+span*.08};
+  }
+
+  function renderTimeline(){
+    const {min,max}=timelineBounds();
+    timeline.innerHTML='<div class="timeline-axis"></div>';
+    const width=Math.max(100,timeline.clientWidth-44);
+    const tickCount=Math.max(4,Math.min(8,Math.floor(width/110)));
+    for(let i=0;i<tickCount;i++){
+      const t=min+(max-min)*(i/(tickCount-1));
+      const d=new Date(t);
+      const el=document.createElement('span');
+      el.className='timeline-year';
+      el.style.left=`${38+((t-min)/(max-min))*width}px`;
+      el.textContent=d.toLocaleDateString(undefined,{month:'short',year:'2-digit'});
+      timeline.append(el);
+    }
+    const sorted=[...projects].sort((a,b)=>projectCreatedAt(a)-projectCreatedAt(b));
+    sorted.forEach((p,i)=>{
+      const when=projectCreatedAt(p);
+      const x=38+Math.max(0,Math.min(1,(when-min)/(max-min)))*width;
+      const dot=document.createElement('button');
+      dot.className='timeline-dot';
+      dot.style.left=`${x}px`;
+      dot.style.bottom=`${30+(i%4)*18}px`;
+      dot.style.setProperty('--family',familyColor(p));
+      dot.dataset.label=`${p.name} · ${new Date(when).toLocaleDateString(undefined,{month:'short',year:'numeric'})}`;
+      dot.title=dot.dataset.label;
+      dot.addEventListener('click',()=>selectProject(p.id));
+      timeline.append(dot);
+    });
+  }
+
 
   async function loadGitHub(){
     try{
@@ -202,5 +285,6 @@
   commandInput.addEventListener('input',()=>{commandSelection=0;renderCommand(commandInput.value)});
   commandInput.addEventListener('keydown',e=>{const rows=filteredProjects(commandInput.value);if(e.key==='ArrowDown'){e.preventDefault();commandSelection=Math.min(rows.length-1,commandSelection+1);renderCommand(commandInput.value)}else if(e.key==='ArrowUp'){e.preventDefault();commandSelection=Math.max(0,commandSelection-1);renderCommand(commandInput.value)}else if(e.key==='Enter'&&rows[commandSelection]){e.preventDefault();commandDialog.close();showView('system');selectProject(rows[commandSelection].id)}});
 
+  addEventListener('resize',()=>{clearTimeout(window.__tzTimelineResize);window.__tzTimelineResize=setTimeout(renderTimeline,120)});
   renderMap();renderStats();renderSignals();renderTimeline();loadGitHub();
 })();
