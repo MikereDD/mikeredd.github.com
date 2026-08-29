@@ -884,3 +884,287 @@ body::after{
     translate(var(--media-x, 0px), var(--media-y, 0px))
     scale(calc(var(--media-scale, 1) * 1.02)) !important;
 }
+
+
+/* === Pass 10: inspector polish === */
+
+/* Make the inspector itself the viewport; only the card contents scroll. */
+.detail{
+  padding:0;
+  overflow:hidden;
+}
+.detail-card{
+  position:relative;
+  height:100%;
+  max-height:none;
+  padding:16px 14px 20px;
+  overflow:auto;
+  scroll-padding-top:96px;
+}
+
+/* Header: calmer, better balanced, and persistent while browsing long cards. */
+.detail-close{
+  position:sticky;
+  top:10px;
+  z-index:20;
+  display:grid;
+  place-items:center;
+  margin-left:auto;
+  margin-bottom:-30px;
+  width:30px;
+  height:30px;
+  background:rgba(5,7,11,.92);
+  backdrop-filter:blur(12px);
+}
+.detail-identity{
+  top:-16px;
+  z-index:12;
+  margin:-16px -14px 14px;
+  padding:18px 46px 15px 14px;
+  gap:12px;
+  min-height:94px;
+  border-bottom:1px solid color-mix(in srgb,var(--focus-family,#9b6cff) 18%,var(--line));
+  background:
+    linear-gradient(180deg,rgba(6,8,13,.995) 0%,rgba(6,8,13,.985) 76%,rgba(6,8,13,.94) 100%);
+}
+.detail-icon{
+  width:56px;
+  height:56px;
+  flex-basis:56px;
+  box-shadow:
+    0 0 0 5px color-mix(in srgb,var(--family) 4%,transparent),
+    0 0 24px color-mix(in srgb,var(--family) 18%,transparent);
+}
+.detail-title{
+  min-width:0;
+}
+.detail-title h2{
+  line-height:1.05;
+}
+.detail-title small{
+  margin-top:5px;
+  line-height:1.35;
+}
+.detail-overline{
+  margin:0 0 7px;
+}
+.activity-pill{
+  margin-top:8px;
+}
+
+/* Give project media deliberate breathing room without changing tuned artwork offsets. */
+.project-media{
+  margin:2px 0 14px;
+}
+.project-media-frame{
+  border-color:color-mix(in srgb,var(--family) 15%,var(--line));
+}
+.project-media-meta{
+  min-height:30px;
+  padding-inline:10px;
+  border-top-color:color-mix(in srgb,var(--family) 12%,var(--line));
+}
+
+/* Metadata reads as a compact instrument panel instead of loose text rows. */
+.detail-meta{
+  gap:0;
+  padding:0;
+  margin:0 0 14px;
+  border:1px solid rgba(255,255,255,.055);
+  border-radius:6px;
+  overflow:hidden;
+  background:rgba(255,255,255,.012);
+}
+.meta-row{
+  grid-template-columns:72px minmax(0,1fr);
+  gap:10px;
+  align-items:start;
+  padding:9px 10px;
+}
+.meta-row + .meta-row{
+  border-top:1px solid rgba(255,255,255,.045);
+}
+.meta-row span:first-child{
+  padding-top:1px;
+}
+.meta-row span:last-child{
+  min-width:0;
+  overflow-wrap:anywhere;
+  line-height:1.35;
+}
+
+/* Description becomes its own readable block. */
+.detail-description{
+  margin:0 0 14px;
+  padding:0 2px;
+  color:#aeb4c2;
+  line-height:1.65;
+}
+
+/* Normalize vertical rhythm through the lower inspector modules. */
+.project-spotlight{
+  margin-top:0;
+  margin-bottom:10px;
+}
+.project-fingerprint{
+  margin-top:0;
+  margin-bottom:10px;
+}
+.detail-actions{
+  margin-top:12px;
+}
+.detail-secondary-actions{
+  margin-top:8px;
+}
+.relation-types,
+.relation-block{
+  margin-top:14px;
+}
+.relation-types{
+  padding:14px 0 0;
+  border-top:1px solid var(--line);
+  border-bottom:0;
+}
+.relation-block{
+  padding-top:14px;
+}
+
+/* Make action groups feel like one deliberate control cluster. */
+.detail-actions a,
+.detail-actions button,
+.detail-secondary-actions button{
+  transition:border-color .16s ease,background .16s ease,color .16s ease,transform .16s ease;
+}
+.detail-actions a:hover,
+.detail-actions button:hover,
+.detail-secondary-actions button:hover{
+  transform:translateY(-1px);
+}
+
+/* Narrow inspector fallback. */
+@media(max-width:1200px){
+  .detail-card{padding-inline:12px}
+  .detail-identity{margin-inline:-12px;padding-left:12px}
+  .meta-row{grid-template-columns:66px minmax(0,1fr)}
+}
+
+@media(max-width:900px){
+  .detail{padding:0}
+  .detail-card{
+    max-height:none;
+    height:auto;
+    overflow:visible;
+    padding:14px;
+  }
+  .detail-identity{
+    position:relative;
+    top:auto;
+    margin:-14px -14px 14px;
+    padding:16px 46px 14px 14px;
+  }
+  .detail-close{
+    position:absolute;
+    top:10px;
+    right:10px;
+    margin:0;
+  }
+}
+
+
+/* === Pass 10.1: inspector legibility refinement === */
+
+/* Slightly widen the inspector on large screens without stealing too much map space. */
+@media(min-width:1400px){
+  .app-shell.detail-open{
+    --detail-width:336px;
+  }
+}
+
+/* Raise the readable floor inside the inspector. */
+.detail-title h2{
+  font-size:clamp(20px,1.55vw,25px);
+}
+.detail-title small{
+  font-size:10px;
+  letter-spacing:.04em;
+}
+.detail-overline{
+  font-size:9px;
+}
+.activity-pill{
+  font-size:9px;
+}
+
+/* Metadata should be readable at a glance, not merely technically visible. */
+.meta-row span:first-child{
+  font-size:8px;
+  letter-spacing:.12em;
+}
+.meta-row span:last-child{
+  font-size:10.5px;
+  line-height:1.42;
+}
+
+/* Give descriptive text more presence. */
+.detail-description{
+  font-size:10.5px;
+  line-height:1.72;
+  letter-spacing:.005em;
+}
+
+/* Slightly strengthen lower-module typography. */
+.project-spotlight b{
+  font-size:10px;
+}
+.project-spotlight small{
+  font-size:8px;
+}
+.fingerprint-head span,
+.fingerprint-head small,
+.fingerprint-bars b{
+  font-size:7.5px;
+}
+.relation-types h3,
+.relation-block h3{
+  font-size:8px;
+}
+.relation-types p,
+.relation-explain{
+  font-size:9px;
+  line-height:1.55;
+}
+
+/* Action cluster: clearer labels and slightly larger hit targets. */
+.detail-actions{
+  gap:7px;
+}
+.detail-actions a,
+.detail-actions button{
+  min-height:32px;
+  font-size:8.5px;
+  letter-spacing:.10em;
+}
+.detail-secondary-actions{
+  gap:6px;
+}
+.detail-secondary-actions button{
+  min-height:28px;
+  font-size:7.5px;
+  letter-spacing:.08em;
+}
+
+/* Media footer remains subtle but should not require squinting. */
+.project-media-meta{
+  font-size:7.5px;
+}
+.project-media-meta small{
+  font-size:6.5px;
+}
+
+/* Preserve compactness on smaller desktops. */
+@media(max-width:1399px){
+  .meta-row span:last-child,
+  .detail-description{
+    font-size:10px;
+  }
+}
