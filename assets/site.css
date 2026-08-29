@@ -681,3 +681,206 @@ body::after{
     radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--family) 10%,transparent),transparent 58%),
     #030407;
 }
+
+
+/* === Pass 8.6: distinguish avatars from project marks === */
+
+/* Portrait/avatar treatment remains circular for bots and dedicated avatars. */
+.project-media[data-media-presentation="avatar"] .project-media-frame{
+  overflow:hidden;
+}
+
+/* App icons, logos, and project marks deserve their own contained presentation. */
+.project-media[data-media-presentation="logo"] .project-media-frame{
+  aspect-ratio:16/9;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 45%,color-mix(in srgb,var(--family) 16%,transparent),transparent 36%),
+    linear-gradient(135deg,color-mix(in srgb,var(--family) 4%,#04050a),#030407 58%,color-mix(in srgb,var(--family) 3%,#030407));
+}
+.project-media[data-media-presentation="logo"] .project-media-frame::before{
+  content:"";
+  position:absolute;
+  width:min(70%,220px);
+  aspect-ratio:1;
+  border-radius:26%;
+  border:1px solid color-mix(in srgb,var(--family) 13%,transparent);
+  transform:rotate(45deg);
+  pointer-events:none;
+  opacity:.7;
+}
+.project-media[data-media-presentation="logo"] .project-media-frame::after{
+  content:"";
+  position:absolute;
+  inset:14% 23%;
+  border:1px solid color-mix(in srgb,var(--family) 7%,transparent);
+  border-radius:22px;
+  pointer-events:none;
+}
+.project-media[data-media-presentation="logo"] img{
+  position:relative;
+  z-index:2;
+  width:min(62%,190px);
+  height:min(78%,190px);
+  object-fit:contain;
+  border-radius:18px;
+  border:0;
+  box-shadow:
+    0 18px 44px rgba(0,0,0,.34),
+    0 0 28px color-mix(in srgb,var(--family) 16%,transparent);
+  transform:none;
+}
+.project-media[data-media-presentation="logo"] .project-media-frame:hover img{
+  transform:scale(1.035);
+}
+.project-media[data-media-presentation="logo"] .project-media-scan{
+  opacity:.16;
+}
+
+/* Wide/rectangular marks should not be squeezed into an artificial square. */
+.project-media[data-media-presentation="logo"] img[alt*="Music Library Repair"]{
+  width:min(76%,240px);
+  height:min(72%,150px);
+  border-radius:12px;
+}
+
+/* Keep logo frames visually quieter than portrait avatars. */
+.project-media[data-media-presentation="logo"] .project-media-meta{
+  letter-spacing:.08em;
+}
+
+
+/* === Pass 8.7: quieter logo presentation === */
+.project-media[data-media-presentation="logo"] .project-media-frame{
+  background:
+    radial-gradient(circle at 50% 48%,color-mix(in srgb,var(--family) 14%,transparent),transparent 34%),
+    linear-gradient(180deg,color-mix(in srgb,var(--family) 2.5%,#030407),#030407 72%);
+}
+.project-media[data-media-presentation="logo"] .project-media-frame::before{
+  width:min(74%,230px);
+  border-color:color-mix(in srgb,var(--family) 7%,transparent);
+  opacity:.36;
+}
+.project-media[data-media-presentation="logo"] .project-media-frame::after{
+  display:none;
+}
+.project-media[data-media-presentation="logo"] img{
+  width:min(68%,210px);
+  height:min(82%,205px);
+  border-radius:16px;
+  box-shadow:
+    0 14px 34px rgba(0,0,0,.28),
+    0 0 24px color-mix(in srgb,var(--family) 12%,transparent);
+}
+.project-media[data-media-presentation="logo"] .project-media-frame:hover img{
+  transform:scale(1.028);
+}
+.project-media[data-media-presentation="logo"] img[alt*="Music Library Repair"]{
+  width:min(82%,255px);
+  height:min(74%,158px);
+}
+
+
+/* === Pass 8.8: optical centering for project marks === */
+.project-media[data-media-presentation="logo"] img{
+  object-position:50% 50%;
+  transform:translateY(5px);
+  transform-origin:center;
+}
+.project-media[data-media-presentation="logo"] .project-media-frame:hover img{
+  transform:translateY(5px) scale(1.028);
+}
+
+/* Marks with stronger lower visual weight need less correction. */
+.project-media[data-media-presentation="logo"] img[alt*="Music Library Repair"]{
+  transform:translateY(3px);
+}
+.project-media[data-media-presentation="logo"] .project-media-frame:hover img[alt*="Music Library Repair"]{
+  transform:translateY(3px) scale(1.028);
+}
+
+
+/* === Pass 8.9: raise avatar presentation slightly === */
+.project-media[data-media-presentation="avatar"] img{
+  transform:translateY(-7px);
+  transform-origin:center;
+}
+.project-media[data-media-presentation="avatar"] .project-media-frame:hover img{
+  transform:translateY(-7px) scale(1.035);
+}
+
+
+/* === Pass 9.0: global media optical raise === */
+
+/* Landscape screenshots / references */
+.project-media[data-media-presentation="landscape"] img{
+  transform:translateY(-6px);
+  transform-origin:center;
+}
+.project-media[data-media-presentation="landscape"] .project-media-frame:hover img{
+  transform:translateY(-6px) scale(1.02);
+}
+
+/* Avatar media: raise a little more than before. */
+.project-media[data-media-presentation="avatar"] img{
+  transform:translateY(-11px);
+}
+.project-media[data-media-presentation="avatar"] .project-media-frame:hover img{
+  transform:translateY(-11px) scale(1.035);
+}
+
+/* Logo/icon media: reverse the earlier downward correction and raise optically. */
+.project-media[data-media-presentation="logo"] img{
+  transform:translateY(-5px);
+}
+.project-media[data-media-presentation="logo"] .project-media-frame:hover img{
+  transform:translateY(-5px) scale(1.028);
+}
+
+/* Wide Music Library Repair mark needs a slightly gentler raise. */
+.project-media[data-media-presentation="logo"] img[alt*="Music Library Repair"]{
+  transform:translateY(-3px);
+}
+.project-media[data-media-presentation="logo"] .project-media-frame:hover img[alt*="Music Library Repair"]{
+  transform:translateY(-3px) scale(1.028);
+}
+
+
+/* === Pass 9.1: per-project native-media optical positioning === */
+
+/*
+   Project media may now define:
+     --media-x
+     --media-y
+     --media-scale
+
+   This intentionally supersedes the earlier broad global centering
+   experiments. Assets without project-specific values remain at their
+   existing centered position.
+*/
+.project-media[data-media-kind="project"] img{
+  transform:
+    translate(var(--media-x, 0px), var(--media-y, 0px))
+    scale(var(--media-scale, 1)) !important;
+  transform-origin:center center;
+}
+
+.project-media[data-media-kind="project"][data-media-presentation="avatar"] .project-media-frame:hover img{
+  transform:
+    translate(var(--media-x, 0px), var(--media-y, 0px))
+    scale(calc(var(--media-scale, 1) * 1.035)) !important;
+}
+
+.project-media[data-media-kind="project"][data-media-presentation="logo"] .project-media-frame:hover img{
+  transform:
+    translate(var(--media-x, 0px), var(--media-y, 0px))
+    scale(calc(var(--media-scale, 1) * 1.028)) !important;
+}
+
+.project-media[data-media-kind="project"][data-media-presentation="landscape"] .project-media-frame:hover img{
+  transform:
+    translate(var(--media-x, 0px), var(--media-y, 0px))
+    scale(calc(var(--media-scale, 1) * 1.02)) !important;
+}

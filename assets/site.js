@@ -101,84 +101,130 @@
       href:'https://github.com/MikereDD/Sariel/blob/main/artwork/icon.png',
       label:'PROJECT AVATAR',
       alt:'Sariel project icon',
-      presentation:'avatar'
+      presentation:'logo',
+      mediaX:'0px',
+      mediaY:'-11px',
+      mediaScale:1.00
     },
     seraph:{
       src:'https://raw.githubusercontent.com/MikereDD/Seraph/main/docs/icon.png',
       href:'https://github.com/MikereDD/Seraph/blob/main/docs/icon.png',
       label:'PROJECT AVATAR',
       alt:'Seraph project icon',
-      presentation:'avatar'
+      presentation:'logo',
+      mediaX:'0px',
+      mediaY:'-12px',
+      mediaScale:1.00
     },
     siphon:{
       src:'https://raw.githubusercontent.com/MikereDD/Siphon/main/docs/assets/branding/siphon-icon.png',
       href:'https://github.com/MikereDD/Siphon/blob/main/docs/assets/branding/siphon-icon.png',
       label:'PROJECT AVATAR',
       alt:'Siphon project icon',
-      presentation:'avatar'
+      presentation:'logo',
+      mediaX:'0px',
+      mediaY:'-15px',
+      mediaScale:0.92
+    },
+    release:{
+      src:'https://raw.githubusercontent.com/MikereDD/Typezero-Release-Standards/main/assets/typezero-release-standards-avatar.png',
+      href:'https://github.com/MikereDD/Typezero-Release-Standards/blob/main/assets/typezero-release-standards-avatar.png',
+      label:'PROJECT AVATAR',
+      alt:'Typezer∅ Release Standards project avatar',
+      presentation:'logo',
+      mediaX:'0px',
+      mediaY:'-15px',
+      mediaScale:1.00
     },
     parallax:{
       src:'https://raw.githubusercontent.com/MikereDD/Parallax-Studio/main/src/ParallaxStudio.App/Assets/parallax-studio-icon-256.png',
       href:'https://github.com/MikereDD/Parallax-Studio/blob/main/src/ParallaxStudio.App/Assets/parallax-studio-icon-256.png',
       label:'PROJECT AVATAR',
       alt:'Parallax Studio project icon',
-      presentation:'avatar'
+      presentation:'logo',
+      mediaX:'0px',
+      mediaY:'-15px',
+      mediaScale:0.92
     },
     mnemosyne:{
       src:'https://raw.githubusercontent.com/MikereDD/Mnemosyne/main/assets/mnemosyne-avatar.png',
       href:'https://github.com/MikereDD/Mnemosyne/blob/main/assets/mnemosyne-avatar.png',
       label:'PROJECT AVATAR',
       alt:'Mnemosyne project avatar',
-      presentation:'avatar'
+      presentation:'avatar',
+      mediaX:'0px',
+      mediaY:'-15px',
+      mediaScale:0.82
     },
     musicrepair:{
       src:'https://raw.githubusercontent.com/MikereDD/Music-Library-Repair/master/assets/Music-Library-Repair-logo.png',
       href:'https://github.com/MikereDD/Music-Library-Repair/blob/master/assets/Music-Library-Repair-logo.png',
       label:'PROJECT LOGO',
       alt:'Music Library Repair project logo',
-      presentation:'avatar'
+      presentation:'logo',
+      mediaX:'0px',
+      mediaY:'-32px',
+      mediaScale:0.92
     },
     kokabiel:{
       src:'https://raw.githubusercontent.com/MikereDD/Kokabiel-Bot/main/assets/kokabiel-avatar.png',
       href:'https://github.com/MikereDD/Kokabiel-Bot/blob/main/assets/kokabiel-avatar.png',
       label:'BOT AVATAR',
       alt:'Kokabiel bot avatar',
-      presentation:'avatar'
+      presentation:'avatar',
+      mediaX:'0px',
+      mediaY:'-16px',
+      mediaScale:0.92
     },
     raziel:{
       src:'https://raw.githubusercontent.com/MikereDD/Raziel-Bot/main/assets/raziel-avatar.png',
       href:'https://github.com/MikereDD/Raziel-Bot/blob/main/assets/raziel-avatar.png',
       label:'BOT AVATAR',
       alt:'Raziel bot avatar',
-      presentation:'avatar'
+      presentation:'avatar',
+      mediaX:'0px',
+      mediaY:'-16px',
+      mediaScale:0.92
     },
     gabriel:{
       src:'https://raw.githubusercontent.com/MikereDD/Gabriel-Bot/main/assets/gabriel-avatar.png',
       href:'https://github.com/MikereDD/Gabriel-Bot/blob/main/assets/gabriel-avatar.png',
       label:'BOT AVATAR',
       alt:'Gabriel bot avatar',
-      presentation:'avatar'
+      presentation:'avatar',
+      mediaX:'0px',
+      mediaY:'-16px',
+      mediaScale:0.92
     },
     sandalphon:{
       src:'https://raw.githubusercontent.com/MikereDD/Sandalphon-Bot/main/assets/sandalphon-avatar.png',
       href:'https://github.com/MikereDD/Sandalphon-Bot/blob/main/assets/sandalphon-avatar.png',
       label:'BOT AVATAR',
       alt:'Sandalphon bot avatar',
-      presentation:'avatar'
+      presentation:'avatar',
+      mediaX:'0px',
+      mediaY:'-16px',
+      mediaScale:0.92
     },
     selaphiel:{
       src:'https://raw.githubusercontent.com/MikereDD/Selaphiel-Bot/main/assets/selaphiel-avatar.png',
       href:'https://github.com/MikereDD/Selaphiel-Bot/blob/main/assets/selaphiel-avatar.png',
       label:'BOT AVATAR',
       alt:'Selaphiel bot avatar',
-      presentation:'avatar'
+      presentation:'avatar',
+      mediaX:'0px',
+      mediaY:'-16px',
+      mediaScale:0.92
     },
     zaphkiel:{
       src:'https://raw.githubusercontent.com/MikereDD/Zaphkiel-Bot/main/assets/zaphkiel-avatar.png',
       href:'https://github.com/MikereDD/Zaphkiel-Bot/blob/main/assets/zaphkiel-avatar.png',
       label:'BOT AVATAR',
       alt:'Zaphkiel bot avatar',
-      presentation:'avatar'
+      presentation:'avatar',
+      mediaX:'0px',
+      mediaY:'-16px',
+      mediaScale:0.92
     }
   };
 
@@ -198,7 +244,7 @@
     const family=FAMILY[p.family];
     const role=roles[p.id] || p.purpose;
     if(media.kind==='project'){
-      return `<div class="project-media" style="--family:${familyColor(p)}" data-media-kind="${media.kind}" data-media-presentation="${media.presentation||'landscape'}">
+      return `<div class="project-media" style="--family:${familyColor(p)};--media-x:${media.mediaX||'0px'};--media-y:${media.mediaY||'0px'};--media-scale:${media.mediaScale||1}" data-media-kind="${media.kind}" data-media-presentation="${media.presentation||'landscape'}">
         <a class="project-media-frame" href="${media.href}" target="_blank" rel="noopener noreferrer" aria-label="Open ${media.label.toLowerCase()} for ${p.name}">
           <img src="${media.src}" alt="${media.alt}" loading="lazy" decoding="async">
           <span class="project-media-fallback" aria-hidden="true"><b>${p.glyph}</b><small>${p.name}</small></span>
