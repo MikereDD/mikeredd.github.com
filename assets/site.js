@@ -38,6 +38,27 @@
     selaphiel:'AUTOMATION AGENT', zaphkiel:'AUTOMATION AGENT'
   };
 
+
+  const RELATION = {
+    workflow:{label:'WORKFLOW',color:'#78df76'},
+    lineage:{label:'LINEAGE',color:'#f1bd55'},
+    infrastructure:{label:'INFRASTRUCTURE',color:'#55c7ff'},
+    family:{label:'FAMILY',color:'#b06cff'},
+    bridge:{label:'PLATFORM BRIDGE',color:'#7ad8ff'},
+    affinity:{label:'SHARED SYSTEM',color:'#c3b5ff'}
+  };
+
+  function relationType(a,b){
+    const pair=new Set([a.id,b.id]);
+    if(pair.has('siphon') && pair.has('seraph') || pair.has('seraph') && pair.has('resound') || pair.has('siphon') && pair.has('resound')) return 'workflow';
+    if(pair.has('atomicclock') && pair.has('watch')) return 'lineage';
+    if(pair.has('release')) return 'infrastructure';
+    if(a.family==='automation' && b.family==='automation') return 'family';
+    if(pair.has('couchlink') && (pair.has('sariel') || pair.has('release'))) return 'bridge';
+    if(a.family===b.family) return 'family';
+    return 'affinity';
+  }
+
   const fallbackCreated = {
     cadence:'2026-07-01', parallax:'2026-07-10', sariel:'2026-07-24', seraph:'2026-07-27', siphon:'2026-07-27',
     resound:'2026-07-27', couchlink:'2026-06-20', atomicclock:'2026-06-28', watch:'2026-08-12', musicrepair:'2026-08-23',
@@ -124,7 +145,10 @@
       const key=[p.id,id].sort().join('|'); if(unique.has(key))return; unique.add(key);
       const a=positions[p.id], b=positions[id]; if(!a||!b)return;
       const line=document.createElementNS('http://www.w3.org/2000/svg','line');
-      line.setAttribute('x1',`${a[0]}%`);line.setAttribute('y1',`${a[1]}%`);line.setAttribute('x2',`${b[0]}%`);line.setAttribute('y2',`${b[1]}%`);line.setAttribute('stroke','#c3b5ff');line.setAttribute('stroke-opacity','.11');line.setAttribute('stroke-dasharray','3 6');line.setAttribute('stroke-width','1');line.dataset.a=p.id;line.dataset.b=id;line.classList.add('relationship-line');svg.append(line);
+      const other=projects.find(x=>x.id===id),type=other?relationType(p,other):'affinity',meta=RELATION[type];
+      line.setAttribute('x1',`${a[0]}%`);line.setAttribute('y1',`${a[1]}%`);line.setAttribute('x2',`${b[0]}%`);line.setAttribute('y2',`${b[1]}%`);
+      line.setAttribute('stroke',meta.color);line.setAttribute('stroke-opacity','.10');line.setAttribute('stroke-dasharray','3 6');line.setAttribute('stroke-width','1');
+      line.dataset.a=p.id;line.dataset.b=id;line.dataset.relation=type;line.classList.add('relationship-line');svg.append(line);
     }));
   }
 
@@ -133,6 +157,8 @@
       const connected=id && (line.dataset.a===id || line.dataset.b===id);
       line.classList.toggle('is-connected',Boolean(connected));
       line.classList.toggle('is-muted',Boolean(id && !connected));
+      if(connected) line.style.setProperty('--relation-color',RELATION[line.dataset.relation]?.color || '#c3b5ff');
+      else line.style.removeProperty('--relation-color');
     });
     svg.querySelectorAll('.core-line').forEach(line=>{
       line.classList.toggle('is-connected',Boolean(id && line.dataset.coreProject===id));
@@ -150,6 +176,8 @@
     selected=null;
     app.classList.remove('detail-open');
     delete app.dataset.focusFamily;
+    delete document.getElementById('core').dataset.family;
+    delete document.getElementById('core').dataset.project;
     app.style.removeProperty('--focus-family');
     document.querySelectorAll('.project-node').forEach(n=>n.classList.remove('is-active','is-related','is-dimmed'));
     updateRelationshipFocus();
@@ -162,18 +190,38 @@
     app.classList.add('detail-open');
     app.dataset.focusFamily=p.family;
     app.style.setProperty('--focus-family',familyColor(p));
+    const core=document.getElementById('core');
+    core.dataset.family=p.family;
+    core.dataset.project=p.id;
+    core.style.setProperty('--core-family',familyColor(p));
     pulseCore(familyColor(p));
     document.querySelectorAll('.project-node').forEach(n=>n.classList.toggle('is-active',n.dataset.project===id));
     updateRelationshipFocus(id);
     const data=github.get(p.repo.toLowerCase()); const activity=data?.pushed_at || data?.updated_at;
     const related=p.relations.map(r=>projects.find(x=>x.id===r)).filter(Boolean);
+    const relationKinds=[...new Set(related.map(r=>relationType(p,r)))];
+    const tier=activityTier(projectActivity(p));
+    const fingerprintBars=[
+      Math.min(5,1+related.length),
+      p.tech.split('·').length+1,
+      tier==='hot'?5:tier==='warm'?4:tier==='cool'?3:2
+    ];
     detail.innerHTML=`<div class="detail-card">
       <button class="detail-close" type="button" aria-label="Close project details">×</button>
       <div class="detail-identity"><div class="detail-icon" style="--family:${familyColor(p)}">${p.glyph}</div><div class="detail-title"><div class="detail-overline">${FAMILY[p.family].label}</div><h2>${p.name}</h2><small>${roles[p.id] || p.purpose}</small><span class="activity-pill">${activity?'● '+formatAgo(activity):'● repository'}</span></div></div>
       <div class="detail-meta"><div class="meta-row"><span>Platform</span><span>${p.platform}</span></div><div class="meta-row"><span>Language</span><span>${data?.language||p.language}</span></div><div class="meta-row"><span>Stack</span><span>${p.tech}</span></div><div class="meta-row"><span>Family</span><span>${FAMILY[p.family].label}</span></div></div>
       <p class="detail-description">${data?.description || p.description}</p>
+      <div class="project-fingerprint" aria-label="Project fingerprint">
+        <div class="fingerprint-head"><span>PROJECT FINGERPRINT</span><small>${roles[p.id] || p.purpose}</small></div>
+        <div class="fingerprint-bars">
+          <span><i style="--level:${fingerprintBars[0]}"></i><b>CONNECTIONS</b></span>
+          <span><i style="--level:${fingerprintBars[1]}"></i><b>COMPLEXITY</b></span>
+          <span><i style="--level:${fingerprintBars[2]}"></i><b>ACTIVITY</b></span>
+        </div>
+      </div>
       <div class="detail-actions"><a href="${repoUrl(p)}" target="_blank" rel="noopener noreferrer">OPEN REPOSITORY ↗</a><a href="${repoUrl(p)}/releases" target="_blank" rel="noopener noreferrer">RELEASES</a></div>
-      ${related.length?`<div class="relation-block"><h3>CONNECTED SYSTEMS</h3><div class="relation-list">${related.map(r=>`<button class="relation-chip" data-open="${r.id}">${r.name}</button>`).join('')}</div></div>`:''}
+      ${relationKinds.length?`<div class="relation-types"><h3>RELATIONSHIP TYPES</h3><div>${relationKinds.map(type=>`<span style="--relation:${RELATION[type].color}"><i></i>${RELATION[type].label}</span>`).join('')}</div></div>`:''}
+      ${related.length?`<div class="relation-block"><h3>CONNECTED SYSTEMS</h3><div class="relation-list">${related.map(r=>{const type=relationType(p,r);return `<button class="relation-chip" data-open="${r.id}" style="--relation:${RELATION[type].color}" title="${RELATION[type].label}">${r.name}</button>`}).join('')}</div></div>`:''}
     </div>`;
     detail.querySelector('.detail-close').addEventListener('click',closeDetail);
     detail.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>selectProject(b.dataset.open)));
