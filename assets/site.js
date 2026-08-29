@@ -534,7 +534,125 @@
     });
   }
 
+
+  function focusLayoutFor(id){
+    const center=positions[id];
+    const p=projectById(id);
+    if(!center || !p)return null;
+
+    const relatedIds=new Set([
+      ...p.relations,
+      ...projects.filter(x=>x.relations.includes(id)).map(x=>x.id)
+    ]);
+
+    const related=[...relatedIds].map(projectById).filter(Boolean);
+    const ringRadius=20.5;
+    const layout=new Map([[id,[50,53]]]);
+
+    related.forEach((r,i)=>{
+      const angle=(-90 + (360/Math.max(related.length,1))*i) * Math.PI/180;
+      layout.set(r.id,[
+        50 + Math.cos(angle)*ringRadius,
+        53 + Math.sin(angle)*ringRadius
+      ]);
+    });
+
+    // Keep non-related systems visible, but push them gently outward
+    // so the selected project's immediate topology reads clearly.
+    projects.forEach(x=>{
+      if(layout.has(x.id))return;
+      const [ox,oy]=positions[x.id];
+      const dx=ox-50,dy=oy-53;
+      const mag=Math.hypot(dx,dy)||1;
+      const push=7.5;
+      layout.set(x.id,[
+        ox + (dx/mag)*push,
+        oy + (dy/mag)*push
+      ]);
+    });
+
+    return layout;
+  }
+
+  function applyFocusLayout(id){
+    const layout=focusLayoutFor(id);
+    if(!layout)return;
+    app.classList.add('relationship-focus-active');
+
+    document.querySelectorAll('.project-node').forEach(node=>{
+      const pos=layout.get(node.dataset.project);
+      if(!pos)return;
+      node.style.setProperty('--focus-left',`${pos[0]}%`);
+      node.style.setProperty('--focus-top',`${pos[1]}%`);
+      node.classList.toggle('is-focus-hub',node.dataset.project===id);
+    });
+
+    const core=document.getElementById('core');
+    core.classList.add('relationship-focus-core');
+    core.style.setProperty('--focus-core-x','50%');
+    core.style.setProperty('--focus-core-y','53%');
+
+    requestAnimationFrame(()=>{
+      app.classList.add('relationship-focus-animate');
+      redrawFocusConnections(layout,id);
+    });
+  }
+
+  function clearFocusLayout(){
+    app.classList.remove('relationship-focus-animate','relationship-focus-active');
+    document.querySelectorAll('.project-node').forEach(node=>{
+      node.style.removeProperty('--focus-left');
+      node.style.removeProperty('--focus-top');
+      node.classList.remove('is-focus-hub');
+    });
+    const core=document.getElementById('core');
+    core.classList.remove('relationship-focus-core');
+    core.style.removeProperty('--focus-core-x');
+    core.style.removeProperty('--focus-core-y');
+    renderMap();
+    refreshActivityState();
+    if(selected){
+      document.querySelectorAll('.project-node').forEach(n=>n.classList.toggle('is-active',n.dataset.project===selected.id));
+      updateRelationshipFocus(selected.id);
+    }
+  }
+
+  function redrawFocusConnections(layout,id){
+    svg.innerHTML='';
+    projects.forEach(p=>{
+      const pos=layout.get(p.id); if(!pos)return;
+      const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1','50%');line.setAttribute('y1','53%');
+      line.setAttribute('x2',`${pos[0]}%`);line.setAttribute('y2',`${pos[1]}%`);
+      line.setAttribute('stroke',familyColor(p));
+      line.setAttribute('stroke-opacity',p.id===id?'.0':'.10');
+      line.setAttribute('stroke-width','1');
+      line.dataset.family=p.family;line.dataset.coreProject=p.id;
+      line.classList.add('core-line');svg.append(line);
+    });
+
+    const unique=new Set();
+    projects.forEach(p=>p.relations.forEach(otherId=>{
+      const key=[p.id,otherId].sort().join('|'); if(unique.has(key))return; unique.add(key);
+      const a=layout.get(p.id),b=layout.get(otherId); if(!a||!b)return;
+      const other=projectById(otherId),type=other?relationType(p,other):'affinity',meta=RELATION[type];
+      const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1',`${a[0]}%`);line.setAttribute('y1',`${a[1]}%`);
+      line.setAttribute('x2',`${b[0]}%`);line.setAttribute('y2',`${b[1]}%`);
+      line.setAttribute('stroke',meta.color);line.setAttribute('stroke-width','1');
+      const connected=p.id===id||otherId===id;
+      line.setAttribute('stroke-opacity',connected?'.58':'.045');
+      line.setAttribute('stroke-dasharray',connected?'':'3 6');
+      line.dataset.a=p.id;line.dataset.b=otherId;line.dataset.relation=type;
+      line.classList.add('relationship-line');
+      if(connected)line.classList.add('is-connected');
+      else line.classList.add('is-muted');
+      svg.append(line);
+    }));
+  }
+
   function closeDetail(){
+    if(app.classList.contains('relationship-focus-active')) clearFocusLayout();
     selected=null;
     app.classList.remove('detail-open');
     delete app.dataset.focusFamily;
@@ -549,7 +667,9 @@
   }
 
   function selectProject(id){
-    const p=projects.find(x=>x.id===id); if(!p)return; selected=p;
+    const p=projects.find(x=>x.id===id); if(!p)return;
+    if(app.classList.contains('relationship-focus-active')) clearFocusLayout();
+    selected=p;
     app.classList.add('detail-open');
     app.dataset.focusFamily=p.family;
     app.style.setProperty('--focus-family',familyColor(p));
@@ -560,6 +680,7 @@
     pulseCore(familyColor(p));
     document.querySelectorAll('.project-node').forEach(n=>n.classList.toggle('is-active',n.dataset.project===id));
     updateRelationshipFocus(id);
+    applyFocusLayout(id);
     const data=github.get(p.repo.toLowerCase()); const activity=data?.pushed_at || data?.updated_at;
     const related=p.relations.map(r=>projects.find(x=>x.id===r)).filter(Boolean);
     const relationKinds=[...new Set(related.map(r=>relationType(p,r)))];

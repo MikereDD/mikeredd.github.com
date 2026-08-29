@@ -1243,3 +1243,145 @@ body::after{
     height:35px;
   }
 }
+
+
+/* === Pass 12: relationship focus topology === */
+
+.project-node{
+  transition:
+    left .52s cubic-bezier(.2,.75,.25,1),
+    top .52s cubic-bezier(.2,.75,.25,1),
+    opacity .28s ease,
+    filter .28s ease,
+    transform .28s ease;
+}
+.relationship-focus-active.relationship-focus-animate .project-node{
+  left:var(--focus-left)!important;
+  top:var(--focus-top)!important;
+}
+.relationship-focus-active .project-node.is-active{
+  z-index:12;
+  transform:translate(-50%,-50%) scale(1.11);
+}
+.relationship-focus-active .project-node.is-related{
+  z-index:10;
+  opacity:1;
+  filter:none;
+}
+.relationship-focus-active .project-node.is-dimmed{
+  opacity:.22;
+  filter:saturate(.45);
+}
+.relationship-focus-active .family-tag{
+  opacity:.18;
+  transition:opacity .25s ease;
+}
+.relationship-focus-active .rings{
+  opacity:.36;
+  transition:opacity .28s ease;
+}
+.relationship-focus-active #connections{
+  transition:opacity .2s ease;
+}
+.relationship-focus-active .relationship-line.is-connected{
+  stroke-width:1.4;
+  filter:drop-shadow(0 0 5px var(--relation-color,#c3b5ff));
+}
+.relationship-focus-active .core-line{
+  stroke-opacity:.05!important;
+}
+.relationship-focus-active .core-line.is-connected{
+  stroke-opacity:.16!important;
+}
+.relationship-focus-core{
+  left:var(--focus-core-x)!important;
+  top:var(--focus-core-y)!important;
+  transition:left .5s cubic-bezier(.2,.75,.25,1),top .5s cubic-bezier(.2,.75,.25,1);
+}
+.motion-off .project-node,
+.motion-off .relationship-focus-core{
+  transition:none!important;
+}
+@media(max-width:900px){
+  .relationship-focus-active.relationship-focus-animate .project-node{
+    left:var(--focus-left)!important;
+    top:var(--focus-top)!important;
+  }
+}
+
+
+/* === Pass 12.1: focus topology collision fix === */
+
+/* In focus mode the selected project temporarily becomes the system origin. */
+.relationship-focus-active #core{
+  opacity:0;
+  pointer-events:none;
+  transform:translate(-50%,-50%) scale(.72)!important;
+  transition:opacity .24s ease,transform .34s ease;
+}
+.relationship-focus-active .rings{
+  opacity:.22;
+}
+
+/* Give the focus hub enough visual authority without colliding with its label. */
+.relationship-focus-active .project-node.is-focus-hub{
+  z-index:30;
+  transform:translate(-50%,-50%) scale(1.18);
+}
+.relationship-focus-active .project-node.is-focus-hub .node-orb{
+  box-shadow:
+    0 0 0 7px color-mix(in srgb,var(--family) 8%,transparent),
+    0 0 34px color-mix(in srgb,var(--family) 34%,transparent);
+}
+.relationship-focus-active .project-node.is-focus-hub .node-copy{
+  position:absolute;
+  left:50%;
+  top:46px;
+  width:max-content;
+  max-width:190px;
+  transform:translateX(-50%);
+  text-align:center;
+  pointer-events:none;
+}
+.relationship-focus-active .project-node.is-focus-hub .node-copy strong{
+  display:block;
+  font-size:10px;
+  letter-spacing:.04em;
+  white-space:normal;
+  text-wrap:balance;
+}
+.relationship-focus-active .project-node.is-focus-hub .node-copy small{
+  display:block;
+  margin-top:3px;
+  font-size:6.5px;
+  letter-spacing:.11em;
+}
+
+/* Related systems stay readable on the wider ring. */
+.relationship-focus-active .project-node.is-related{
+  transform:translate(-50%,-50%) scale(1.02);
+}
+.relationship-focus-active .project-node.is-related .node-copy{
+  opacity:.9;
+}
+
+/* The central radial spokes are visual noise once the project itself is the hub. */
+.relationship-focus-active .core-line{
+  opacity:0!important;
+}
+
+/* Make connected relationships read as the actual focus structure. */
+.relationship-focus-active .relationship-line.is-connected{
+  stroke-width:1.6;
+  stroke-opacity:.72!important;
+  filter:drop-shadow(0 0 6px var(--relation-color,#c3b5ff));
+}
+.relationship-focus-active .relationship-line.is-muted{
+  stroke-opacity:.025!important;
+}
+
+/* Preserve calm motion-off behavior. */
+.motion-off.relationship-focus-active #core,
+.motion-off.relationship-focus-active .project-node{
+  transition:none!important;
+}
