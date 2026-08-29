@@ -59,6 +59,113 @@
     return 'affinity';
   }
 
+
+  const PROJECT_MEDIA = {
+    resound:{
+      src:'https://raw.githubusercontent.com/MikereDD/Resound/main/docs/design/Resound-premium-mockup.png',
+      href:'https://github.com/MikereDD/Resound/blob/main/docs/design/Resound-premium-mockup.png',
+      label:'INTERFACE PREVIEW',
+      alt:'Resound premium interface design',
+      presentation:'landscape'
+    },
+    kokabiel:{
+      src:'https://raw.githubusercontent.com/MikereDD/Kokabiel-Bot/main/assets/kokabiel-avatar.png',
+      href:'https://github.com/MikereDD/Kokabiel-Bot/blob/main/assets/kokabiel-avatar.png',
+      label:'BOT AVATAR',
+      alt:'Kokabiel bot avatar',
+      presentation:'avatar'
+    },
+    raziel:{
+      src:'https://raw.githubusercontent.com/MikereDD/Raziel-Bot/main/assets/raziel-avatar.png',
+      href:'https://github.com/MikereDD/Raziel-Bot/blob/main/assets/raziel-avatar.png',
+      label:'BOT AVATAR',
+      alt:'Raziel bot avatar',
+      presentation:'avatar'
+    },
+    gabriel:{
+      src:'https://raw.githubusercontent.com/MikereDD/Gabriel-Bot/main/assets/gabriel-avatar.png',
+      href:'https://github.com/MikereDD/Gabriel-Bot/blob/main/assets/gabriel-avatar.png',
+      label:'BOT AVATAR',
+      alt:'Gabriel bot avatar',
+      presentation:'avatar'
+    },
+    sandalphon:{
+      src:'https://raw.githubusercontent.com/MikereDD/Sandalphon-Bot/main/assets/sandalphon-avatar.png',
+      href:'https://github.com/MikereDD/Sandalphon-Bot/blob/main/assets/sandalphon-avatar.png',
+      label:'BOT AVATAR',
+      alt:'Sandalphon bot avatar',
+      presentation:'avatar'
+    },
+    selaphiel:{
+      src:'https://raw.githubusercontent.com/MikereDD/Selaphiel-Bot/main/assets/selaphiel-avatar.png',
+      href:'https://github.com/MikereDD/Selaphiel-Bot/blob/main/assets/selaphiel-avatar.png',
+      label:'BOT AVATAR',
+      alt:'Selaphiel bot avatar',
+      presentation:'avatar'
+    },
+    zaphkiel:{
+      src:'https://raw.githubusercontent.com/MikereDD/Zaphkiel-Bot/main/assets/zaphkiel-avatar.png',
+      href:'https://github.com/MikereDD/Zaphkiel-Bot/blob/main/assets/zaphkiel-avatar.png',
+      label:'BOT AVATAR',
+      alt:'Zaphkiel bot avatar',
+      presentation:'avatar'
+    }
+  };
+
+  function projectMedia(p){
+    const configured=PROJECT_MEDIA[p.id];
+    if(configured)return {...configured,kind:'project'};
+    return {
+      href:repoUrl(p),
+      label:'SYSTEM IDENTITY',
+      alt:`${p.name} Typezer∅ project identity`,
+      kind:'generated'
+    };
+  }
+
+  function mediaMarkup(p){
+    const media=projectMedia(p);
+    const family=FAMILY[p.family];
+    const role=roles[p.id] || p.purpose;
+    if(media.kind==='project'){
+      return `<div class="project-media" style="--family:${familyColor(p)}" data-media-kind="${media.kind}" data-media-presentation="${media.presentation||'landscape'}">
+        <a class="project-media-frame" href="${media.href}" target="_blank" rel="noopener noreferrer" aria-label="Open ${media.label.toLowerCase()} for ${p.name}">
+          <img src="${media.src}" alt="${media.alt}" loading="lazy" decoding="async">
+          <span class="project-media-fallback" aria-hidden="true"><b>${p.glyph}</b><small>${p.name}</small></span>
+          <i class="project-media-scan" aria-hidden="true"></i>
+        </a>
+        <div class="project-media-meta"><span>${media.label}</span><small>PROJECT-NATIVE MEDIA</small></div>
+      </div>`;
+    }
+    return `<div class="project-media generated-media" style="--family:${familyColor(p)}" data-media-kind="generated">
+      <a class="project-media-frame generated-media-frame" href="${media.href}" target="_blank" rel="noopener noreferrer" aria-label="Open repository for ${p.name}">
+        <div class="generated-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="generated-core" aria-hidden="true"><span>${p.glyph}</span></div>
+        <div class="generated-copy">
+          <small>${family.label.toUpperCase()}</small>
+          <b>${p.name}</b>
+          <span>${role}</span>
+          <em>${p.platform} · ${p.language}</em>
+        </div>
+        <div class="generated-tech">${p.tech.split('·').map(x=>`<span>${x.trim()}</span>`).join('')}</div>
+        <i class="project-media-scan" aria-hidden="true"></i>
+      </a>
+      <div class="project-media-meta"><span>${media.label}</span><small>TYPEZER∅ GENERATED FALLBACK</small></div>
+    </div>`;
+  }
+
+  function bindMediaFallback(root){
+    root.querySelectorAll('.project-media img').forEach(img=>{
+      const wrap=img.closest('.project-media');
+      img.addEventListener('load',()=>wrap?.classList.add('media-loaded'),{once:true});
+      img.addEventListener('error',()=>wrap?.classList.add('media-failed'),{once:true});
+      if(img.complete){
+        if(img.naturalWidth) wrap?.classList.add('media-loaded');
+        else wrap?.classList.add('media-failed');
+      }
+    });
+  }
+
   const fallbackCreated = {
     cadence:'2026-07-01', parallax:'2026-07-10', sariel:'2026-07-24', seraph:'2026-07-27', siphon:'2026-07-27',
     resound:'2026-07-27', couchlink:'2026-06-20', atomicclock:'2026-06-28', watch:'2026-08-12', musicrepair:'2026-08-23',
@@ -211,6 +318,7 @@
     detail.innerHTML=`<div class="detail-card">
       <button class="detail-close" type="button" aria-label="Close project details">×</button>
       <div class="detail-identity"><div class="detail-icon" style="--family:${familyColor(p)}">${p.glyph}</div><div class="detail-title"><div class="detail-overline">${FAMILY[p.family].label}</div><h2>${p.name}</h2><small>${roles[p.id] || p.purpose}</small><span class="activity-pill">${activity?'● '+formatAgo(activity):'● repository'}</span></div></div>
+      ${mediaMarkup(p)}
       <div class="detail-meta"><div class="meta-row"><span>Platform</span><span>${p.platform}</span></div><div class="meta-row"><span>Language</span><span>${data?.language||p.language}</span></div><div class="meta-row"><span>Stack</span><span>${p.tech}</span></div><div class="meta-row"><span>Family</span><span>${FAMILY[p.family].label}</span></div></div>
       <p class="detail-description">${data?.description || p.description}</p>
       <div class="project-spotlight" style="--family:${familyColor(p)}">
@@ -244,6 +352,7 @@
       }).join(' ')}</p></div>`:''}
       ${related.length?`<div class="relation-block"><h3>CONNECTED SYSTEMS</h3><div class="relation-list">${related.map(r=>{const type=relationType(p,r);return `<button class="relation-chip" data-open="${r.id}" style="--relation:${RELATION[type].color}" title="${RELATION[type].label}">${r.name}</button>`}).join('')}</div></div>`:''}
     </div>`;
+    bindMediaFallback(detail);
     detail.querySelector('.detail-close').addEventListener('click',closeDetail);
     detail.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>selectProject(b.dataset.open)));
     detail.querySelectorAll('[data-project-nav]').forEach(b=>b.addEventListener('click',()=>{
@@ -590,7 +699,7 @@
     const relationWords=new Set(['workflow','lineage','infrastructure','family','bridge','affinity']);
     return projects.map(p=>{
       const relTypes=[...new Set(p.relations.map(id=>{const other=projectById(id);return other?relationType(p,other):'affinity'}))];
-      const hay=[p.name,p.repo,p.platform,p.language,p.tech,p.purpose,p.keywords,FAMILY[p.family].label,...relTypes,...relTypes.map(t=>RELATION[t]?.label||'')].join(' ').toLowerCase();
+      const hay=[p.name,p.repo,p.platform,p.language,p.tech,p.purpose,p.keywords,FAMILY[p.family].label,PROJECT_MEDIA[p.id]?'screenshot media preview':'system identity generated preview',...relTypes,...relTypes.map(t=>RELATION[t]?.label||'')].join(' ').toLowerCase();
       const useful=tokens.filter(t=>t!=='relation'&&t!=='relations');
       const matched=useful.every(t=>hay.includes(t));
       const score=useful.reduce((n,t)=>n+(p.name.toLowerCase().includes(t)?8:0)+(FAMILY[p.family].label.toLowerCase().includes(t)?4:0)+(relationWords.has(t)&&relTypes.includes(t)?6:0)+(hay.includes(t)?1:0),0);

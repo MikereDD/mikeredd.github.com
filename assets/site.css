@@ -448,3 +448,193 @@ body::after{
 @media(prefers-reduced-motion:reduce){
   .app-shell.observe .project-node{transition:none!important}
 }
+
+
+/* === Pass 8: project media / showcase depth === */
+.project-media{
+  margin:12px 0 14px;
+  border:1px solid color-mix(in srgb,var(--family) 22%,var(--line));
+  border-radius:8px;
+  overflow:hidden;
+  background:#06080d;
+}
+.project-media-frame{
+  position:relative;
+  display:block;
+  aspect-ratio:16/9;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 45%,color-mix(in srgb,var(--family) 13%,transparent),transparent 54%),
+    linear-gradient(145deg,#090b12,#030407);
+  text-decoration:none;
+}
+.project-media img{
+  width:100%;height:100%;display:block;object-fit:cover;
+  opacity:0;transform:scale(1.015);
+  transition:opacity .32s ease,transform .6s cubic-bezier(.2,.8,.2,1),filter .3s ease;
+  filter:saturate(.88) contrast(1.04) brightness(.88);
+}
+.project-media.media-loaded img{opacity:1}
+.project-media-frame:hover img{transform:scale(1.035);filter:saturate(1) contrast(1.05) brightness(.98)}
+.project-media[data-media-kind="repository"] img{object-fit:cover}
+.project-media-fallback{
+  position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:7px;
+  color:color-mix(in srgb,var(--family) 75%,#fff);
+  opacity:1;
+}
+.project-media.media-loaded .project-media-fallback{opacity:0}
+.project-media-fallback b{
+  width:54px;height:54px;display:grid;place-items:center;border-radius:50%;
+  border:1px solid color-mix(in srgb,var(--family) 55%,transparent);
+  font-size:1.5rem;box-shadow:0 0 26px color-mix(in srgb,var(--family) 20%,transparent)
+}
+.project-media-fallback small{font:600 .55rem/1 var(--mono);letter-spacing:.12em;color:#687083}
+.project-media-scan{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    linear-gradient(180deg,transparent 0 48%,color-mix(in srgb,var(--family) 12%,transparent) 50%,transparent 52%),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:100% 100%,28px 100%;
+  opacity:.45;mix-blend-mode:screen
+}
+.project-media-frame::after{
+  content:"OPEN ↗";
+  position:absolute;right:8px;bottom:8px;
+  padding:5px 7px;border-radius:4px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(2,3,6,.78);backdrop-filter:blur(10px);
+  color:#aeb4c2;font:600 .45rem/1 var(--mono);letter-spacing:.08em;
+  opacity:0;transform:translateY(3px);transition:opacity .15s ease,transform .15s ease
+}
+.project-media-frame:hover::after,.project-media-frame:focus-visible::after{opacity:1;transform:none}
+.project-media-meta{
+  min-height:28px;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:7px 9px;border-top:1px solid rgba(174,184,214,.08);
+  background:rgba(255,255,255,.012)
+}
+.project-media-meta span{font:600 .48rem/1 var(--mono);letter-spacing:.12em;color:#9da5b7}
+.project-media-meta small{font:500 .43rem/1 var(--mono);letter-spacing:.08em;color:#4d5565}
+.project-media[data-media-kind="project"] .project-media-meta small{color:color-mix(in srgb,var(--family) 60%,#687083)}
+.project-media.media-failed .project-media-meta small::before{content:"LOCAL FALLBACK · ";color:#6b7281}
+
+@media(max-width:900px){
+  .project-media-frame{aspect-ratio:16/10}
+}
+@media(prefers-reduced-motion:reduce){
+  .project-media img,.project-media-frame::after{transition:none!important}
+}
+
+
+/* === Pass 8.1: replace generic GitHub fallback with Typezer∅ system identity === */
+.generated-media-frame{
+  display:block;
+  isolation:isolate;
+  padding:18px;
+  background:
+    radial-gradient(circle at 24% 48%,color-mix(in srgb,var(--family) 18%,transparent),transparent 31%),
+    linear-gradient(135deg,rgba(255,255,255,.018),transparent 42%),
+    #05070c;
+}
+.generated-media-frame::before{
+  content:"";
+  position:absolute;inset:0;z-index:-1;
+  background:
+    linear-gradient(90deg,color-mix(in srgb,var(--family) 8%,transparent) 1px,transparent 1px),
+    linear-gradient(color-mix(in srgb,var(--family) 6%,transparent) 1px,transparent 1px);
+  background-size:28px 28px;
+  mask-image:linear-gradient(90deg,#000,transparent 82%);
+}
+.generated-orbit{
+  position:absolute;
+  left:24px;top:50%;
+  width:108px;height:108px;
+  transform:translateY(-50%);
+}
+.generated-orbit i{
+  position:absolute;inset:0;border-radius:50%;
+  border:1px solid color-mix(in srgb,var(--family) 20%,transparent)
+}
+.generated-orbit i:nth-child(2){inset:13px}
+.generated-orbit i:nth-child(3){inset:27px;border-style:dashed;opacity:.8}
+.generated-core{
+  position:absolute;left:52px;top:50%;
+  width:52px;height:52px;transform:translateY(-50%);
+  display:grid;place-items:center;border-radius:50%;
+  border:1px solid color-mix(in srgb,var(--family) 70%,#fff);
+  background:color-mix(in srgb,var(--family) 8%,#05070c);
+  box-shadow:0 0 28px color-mix(in srgb,var(--family) 30%,transparent)
+}
+.generated-core span{font-size:1.4rem;color:#fff}
+.generated-copy{
+  position:absolute;left:154px;right:18px;top:50%;
+  transform:translateY(-54%);
+  display:grid;gap:5px
+}
+.generated-copy small{
+  color:var(--family);font:600 .46rem/1 var(--mono);letter-spacing:.14em
+}
+.generated-copy b{
+  color:#f0f2f7;font:700 clamp(.88rem,1vw,1.1rem)/1.1 var(--sans)
+}
+.generated-copy span{
+  color:#9aa2b2;font:600 .5rem/1.2 var(--mono);letter-spacing:.07em;text-transform:uppercase
+}
+.generated-copy em{
+  color:#596173;font:500 .45rem/1.2 var(--mono);font-style:normal
+}
+.generated-tech{
+  position:absolute;left:154px;right:16px;bottom:13px;
+  display:flex;flex-wrap:wrap;gap:4px
+}
+.generated-tech span{
+  padding:3px 5px;border:1px solid color-mix(in srgb,var(--family) 18%,var(--line));
+  border-radius:999px;color:#667082;background:rgba(0,0,0,.2);
+  font:500 .4rem/1 var(--mono);letter-spacing:.04em
+}
+.generated-media .project-media-fallback{display:none}
+.generated-media .project-media-frame::after{content:"OPEN REPOSITORY ↗"}
+
+@media(max-width:900px){
+  .generated-copy{left:135px}
+  .generated-tech{left:135px}
+  .generated-orbit{left:12px}
+  .generated-core{left:40px}
+}
+
+
+/* === Pass 8.2: native Telegram bot avatars === */
+.project-media[data-media-presentation="avatar"] .project-media-frame{
+  aspect-ratio:16/9;
+  display:grid;
+  place-items:center;
+  background:
+    radial-gradient(circle at 50% 48%,color-mix(in srgb,var(--family) 18%,transparent),transparent 38%),
+    radial-gradient(circle at 50% 50%,rgba(176,108,255,.06),transparent 64%),
+    #05060b;
+}
+.project-media[data-media-presentation="avatar"] img{
+  width:min(68%,190px);
+  height:auto;
+  max-height:88%;
+  aspect-ratio:1/1;
+  object-fit:cover;
+  border-radius:50%;
+  border:1px solid color-mix(in srgb,var(--family) 58%,#fff);
+  box-shadow:
+    0 0 0 8px color-mix(in srgb,var(--family) 5%,transparent),
+    0 0 0 18px color-mix(in srgb,var(--family) 3%,transparent),
+    0 0 32px color-mix(in srgb,var(--family) 28%,transparent);
+}
+.project-media[data-media-presentation="avatar"] .project-media-frame:hover img{
+  transform:scale(1.035);
+}
+.project-media[data-media-presentation="avatar"] .project-media-scan{
+  opacity:.22;
+}
+.project-media[data-media-presentation="avatar"] .project-media-frame::before{
+  content:"";
+  position:absolute;
+  width:72%;aspect-ratio:1;border-radius:50%;
+  border:1px dashed color-mix(in srgb,var(--family) 18%,transparent);
+  pointer-events:none;
+}
